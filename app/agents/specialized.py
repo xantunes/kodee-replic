@@ -73,9 +73,9 @@ class DNSAgent(BaseAgent):
     )
 
     DNS_TOOL_NAMES = {
-        "create_dns_record",
-        "list_dns_records",
-        "delete_dns_record",
+        "create_record",
+        "list_records",
+        "delete_record",
     }
 
     def __init__(
@@ -199,7 +199,6 @@ class MonitoringAgent(BaseAgent):
     MONITORING_TOOL_NAMES = {
         "check_server_health",
         "get_website_status",
-        "get_server_metrics",
     }
 
     def __init__(

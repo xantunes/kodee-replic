@@ -40,23 +40,3 @@ def get_website_status(url: str) -> str:
         f"- SSL certificate: Valid (expires in 60 days)"
     )
 
-
-@mcp.tool()
-def get_server_metrics(server_id: str, metric: str = "cpu") -> str:
-    """Get specific metrics for a server.
-
-    Args:
-        server_id: The server identifier.
-        metric: The metric to retrieve (cpu, memory, disk, network).
-
-    Returns:
-        Metric value and details.
-    """
-    metrics = {
-        "cpu": "42% (2.1 GHz average)",
-        "memory": "58% (4.6 GB / 8 GB used)",
-        "disk": "62% (310 GB / 500 GB used)",
-        "network": "1.2 MB/s in, 0.8 MB/s out",
-    }
-    value = metrics.get(metric.lower(), "Unknown metric")
-    return f"Server {server_id} {metric} usage: {value}"

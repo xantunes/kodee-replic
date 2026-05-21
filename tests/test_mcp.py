@@ -7,34 +7,34 @@ import pytest
 
 from app.mcp.client import MCPClient
 from app.mcp.tools.backup_tools import create_backup, list_backups, restore_backup
-from app.mcp.tools.dns_tools import create_dns_record, delete_dns_record, list_dns_records
-from app.mcp.tools.monitoring_tools import check_server_health, get_server_metrics, get_website_status
+from app.mcp.tools.dns_tools import create_record, delete_record, list_records
+from app.mcp.tools.monitoring_tools import check_server_health, get_website_status
 from app.mcp.tools.user_tools import get_user_info, list_user_sites
 
 
 class TestMCPServerTools:
     """Tests for individual MCP server tool functions."""
 
-    def test_create_dns_record(self) -> None:
-        """Test create_dns_record returns stub confirmation."""
-        result = create_dns_record("example.com", "www", "A", "192.0.2.1", ttl=300)
+    def test_create_record(self) -> None:
+        """Test create_record returns stub confirmation."""
+        result = create_record("example.com", "www", "A", "192.0.2.1", ttl=300)
         assert "DNS record created" in result
         assert "www.example.com" in result
         assert "A" in result
         assert "192.0.2.1" in result
         assert "TTL: 300" in result
 
-    def test_list_dns_records(self) -> None:
-        """Test list_dns_records returns stub records."""
-        result = list_dns_records("example.com")
+    def test_list_records(self) -> None:
+        """Test list_records returns stub records."""
+        result = list_records("example.com")
         assert "DNS records for example.com" in result
         assert "192.0.2.1" in result
         assert "CNAME" in result
         assert "MX" in result
 
-    def test_delete_dns_record(self) -> None:
-        """Test delete_dns_record returns stub confirmation."""
-        result = delete_dns_record("example.com", "www", "A")
+    def test_delete_record(self) -> None:
+        """Test delete_record returns stub confirmation."""
+        result = delete_record("example.com", "www", "A")
         assert "DNS record deleted" in result
         assert "www.example.com" in result
         assert "A" in result
@@ -71,13 +71,6 @@ class TestMCPServerTools:
         assert "UP" in result
         assert "200" in result
 
-    def test_get_server_metrics(self) -> None:
-        """Test get_server_metrics returns stub metrics."""
-        result = get_server_metrics("srv-001", metric="cpu")
-        assert "srv-001" in result
-        assert "cpu" in result
-        assert "42%" in result
-
     def test_get_user_info(self) -> None:
         """Test get_user_info returns stub user details."""
         result = get_user_info("user-001")
@@ -104,8 +97,8 @@ class TestMCPClient:
         assert isinstance(tools, list)
         assert len(tools) >= 8
         tool_names = {t["function"]["name"] for t in tools}
-        assert "create_dns_record" in tool_names
-        assert "list_dns_records" in tool_names
+        assert "create_record" in tool_names
+        assert "list_records" in tool_names
         assert "create_backup" in tool_names
         assert "check_server_health" in tool_names
         assert "get_user_info" in tool_names
@@ -115,7 +108,7 @@ class TestMCPClient:
         """Test that call_tool executes a tool and returns result."""
         client = MCPClient()
         result = await client.call_tool(
-            "create_dns_record",
+            "create_record",
             {"zone": "example.com", "name": "www", "type": "A", "value": "192.0.2.1"},
         )
         assert "DNS record created" in result

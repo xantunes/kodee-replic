@@ -202,9 +202,9 @@ class TestSpecializedAgents:
         )
 
         all_tools = [
-            {"function": {"name": "create_dns_record"}},
-            {"function": {"name": "list_dns_records"}},
-            {"function": {"name": "delete_dns_record"}},
+            {"function": {"name": "create_record"}},
+            {"function": {"name": "list_records"}},
+            {"function": {"name": "delete_record"}},
             {"function": {"name": "get_weather"}},
             {"function": {"name": "create_backup"}},
         ]
@@ -223,9 +223,9 @@ class TestSpecializedAgents:
             tool_names = {
                 t["function"]["name"] for t in agent.tools
             }
-            assert "create_dns_record" in tool_names
-            assert "list_dns_records" in tool_names
-            assert "delete_dns_record" in tool_names
+            assert "create_record" in tool_names
+            assert "list_records" in tool_names
+            assert "delete_record" in tool_names
             assert "get_weather" not in tool_names
             assert "create_backup" not in tool_names
 
@@ -241,7 +241,7 @@ class TestSpecializedAgents:
             {"function": {"name": "create_backup"}},
             {"function": {"name": "restore_backup"}},
             {"function": {"name": "list_backups"}},
-            {"function": {"name": "create_dns_record"}},
+            {"function": {"name": "create_record"}},
         ]
 
         with patch(
@@ -261,7 +261,7 @@ class TestSpecializedAgents:
             assert "create_backup" in tool_names
             assert "restore_backup" in tool_names
             assert "list_backups" in tool_names
-            assert "create_dns_record" not in tool_names
+            assert "create_record" not in tool_names
 
     @pytest.mark.asyncio
     async def test_monitoring_agent_filters_tools(self) -> None:
@@ -274,7 +274,7 @@ class TestSpecializedAgents:
         all_tools = [
             {"function": {"name": "check_server_health"}},
             {"function": {"name": "get_website_status"}},
-            {"function": {"name": "get_server_metrics"}},
+            {"function": {"name": "check_server_health"}},
             {"function": {"name": "create_backup"}},
         ]
 
@@ -294,7 +294,7 @@ class TestSpecializedAgents:
             }
             assert "check_server_health" in tool_names
             assert "get_website_status" in tool_names
-            assert "get_server_metrics" in tool_names
+            assert "check_server_health" in tool_names
             assert "create_backup" not in tool_names
 
 

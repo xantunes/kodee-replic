@@ -4,7 +4,7 @@ from app.mcp.tools import mcp
 
 
 @mcp.tool()
-def create_dns_record(zone: str, name: str, type: str, value: str, ttl: int = 3600) -> str:
+def create_record(zone: str, name: str, type: str, value: str, ttl: int = 3600) -> str:
     """Create a DNS record in the specified zone.
 
     Args:
@@ -24,7 +24,7 @@ def create_dns_record(zone: str, name: str, type: str, value: str, ttl: int = 36
 
 
 @mcp.tool()
-def list_dns_records(zone: str) -> str:
+def list_records(zone: str) -> str:
     """List all DNS records in the specified zone.
 
     Args:
@@ -42,7 +42,7 @@ def list_dns_records(zone: str) -> str:
 
 
 @mcp.tool()
-def delete_dns_record(zone: str, name: str, type: str) -> str:
+def delete_record(zone: str, name: str, type: str) -> str:
     """Delete a DNS record from the specified zone.
 
     Args:
