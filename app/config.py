@@ -25,11 +25,10 @@ class Settings(BaseSettings):
     # Use "mini" agents for fast/cheap tasks, "full" for complex reasoning
     MODEL_ROUTER: str = ""       # default: mini (fast classification)
     MODEL_GENERAL: str = ""      # default: mini (chitchat)
-    MODEL_CREATIVE: str = ""     # default: mini (creative writing)
-    MODEL_IMAGE: str = ""        # default: mini (image prompts)
-    MODEL_CODE: str = ""         # default: full (programming)
-    MODEL_RESEARCH: str = ""     # default: full (fact analysis)
-    MODEL_DATA: str = ""         # default: full (data analysis)
+    MODEL_DNS: str = ""          # default: full (DNS management)
+    MODEL_BACKUP: str = ""       # default: full (backup and restore)
+    MODEL_MONITORING: str = ""   # default: full (infrastructure monitoring)
+    MODEL_HANDOFF: str = ""      # default: mini (human escalation detection)
 
     # Database
     DATABASE_URL: str

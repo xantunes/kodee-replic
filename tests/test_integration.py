@@ -157,6 +157,9 @@ class TestIntegrationMultiTurn:
         mock_router = MagicMock()
         mock_router.route = AsyncMock(return_value="general")
 
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=False)
+
         mock_general_agent = MagicMock()
         mock_general_agent.run = AsyncMock(
             side_effect=[
@@ -167,6 +170,7 @@ class TestIntegrationMultiTurn:
 
         orchestrator = Orchestrator(
             router=mock_router,
+            handoff_classifier=mock_handoff,
             general_agent=mock_general_agent,
         )
 
@@ -188,44 +192,48 @@ class TestIntegrationMultiTurn:
         """Mock router to route to different agents and verify agent_used."""
         mock_router = MagicMock()
         mock_router.route = AsyncMock(
-            side_effect=["data", "image", "code"]
+            side_effect=["dns", "backup", "monitoring"]
         )
 
-        mock_data_agent = MagicMock()
-        mock_data_agent.run = AsyncMock(
-            return_value={"message": "Data insight", "agent": "data"}
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=False)
+
+        mock_dns_agent = MagicMock()
+        mock_dns_agent.run = AsyncMock(
+            return_value={"message": "DNS insight", "agent": "dns"}
         )
 
-        mock_image_agent = MagicMock()
-        mock_image_agent.run = AsyncMock(
-            return_value={"message": "Image prompt", "agent": "image"}
+        mock_backup_agent = MagicMock()
+        mock_backup_agent.run = AsyncMock(
+            return_value={"message": "Backup complete", "agent": "backup"}
         )
 
-        mock_code_agent = MagicMock()
-        mock_code_agent.run = AsyncMock(
-            return_value={"message": "Code fix", "agent": "code"}
+        mock_monitoring_agent = MagicMock()
+        mock_monitoring_agent.run = AsyncMock(
+            return_value={"message": "Server is healthy", "agent": "monitoring"}
         )
 
         orchestrator = Orchestrator(
             router=mock_router,
-            data_agent=mock_data_agent,
-            image_agent=mock_image_agent,
-            code_agent=mock_code_agent,
+            handoff_classifier=mock_handoff,
+            dns_agent=mock_dns_agent,
+            backup_agent=mock_backup_agent,
+            monitoring_agent=mock_monitoring_agent,
         )
 
         result1 = await orchestrator.process(
-            user_id="user-1", message="Analyze this CSV", session_id="route-session"
+            user_id="user-1", message="Create a DNS record", session_id="route-session"
         )
         result2 = await orchestrator.process(
-            user_id="user-1", message="Generate an image", session_id="route-session"
+            user_id="user-1", message="Start a backup", session_id="route-session"
         )
         result3 = await orchestrator.process(
-            user_id="user-1", message="Fix my bug", session_id="route-session"
+            user_id="user-1", message="Check server health", session_id="route-session"
         )
 
-        assert result1["agent_used"] == "data"
-        assert result2["agent_used"] == "image"
-        assert result3["agent_used"] == "code"
+        assert result1["agent_used"] == "dns"
+        assert result2["agent_used"] == "backup"
+        assert result3["agent_used"] == "monitoring"
 
         usage = orchestrator.get_agent_usage("route-session")
-        assert usage == ["data", "image", "code"]
+        assert usage == ["dns", "backup", "monitoring"]

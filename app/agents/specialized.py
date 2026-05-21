@@ -5,13 +5,11 @@ from typing import Any, Dict, List
 from langchain_core.messages import BaseMessage
 
 from app.agents.base import BaseAgent
-from app.agents.data_tools import parse_csv, summarize_data
 from app.llm.llm_service import LLMService
 from app.llm.model_resolver import resolve_model
 from app.llm.prompts import build_messages
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
-from app.rag.retriever import RAGRetriever
 
 
 class GeneralAgent(BaseAgent):
@@ -63,18 +61,24 @@ class GeneralAgent(BaseAgent):
         return {"message": str(response.content), "agent": self.name}
 
 
-class CodeAgent(BaseAgent):
-    """Agent for programming and debugging help."""
+class DNSAgent(BaseAgent):
+    """Agent for DNS management tasks."""
 
-    name = "code"
+    name = "dns"
     system_prompt = (
-        "You are Kodee, an expert programming assistant. "
-        "You write clean, efficient, and well-documented code. "
-        "You help with debugging, code review, architecture decisions, and explaining concepts. "
-        "When providing code, include explanations and best practices."
+        "You are Kodee, a DNS management specialist. "
+        "You help users create DNS records, list existing records, and delete records. "
+        "You understand A, AAAA, CNAME, MX, TXT, and NS records. "
+        "Always confirm the domain and record details before making changes."
     )
 
-    CODE_TOOL_NAMES = {"read_file", "write_file", "run_command", "calculate", "search_files"}
+    DNS_TOOL_NAMES = {
+        "dns_create_record",
+        "dns_list_records",
+        "dns_delete_record",
+        "dns_update_record",
+        "get_system_info",
+    }
 
     def __init__(
         self,
@@ -82,14 +86,14 @@ class CodeAgent(BaseAgent):
         tool_registry: ToolRegistry | None = None,
         mcp_client: MCPClient | None = None,
     ) -> None:
-        """Initialize the code agent.
+        """Initialize the DNS agent.
 
         Args:
             llm_service: LLM service for generating responses.
             tool_registry: Local tool registry.
             mcp_client: MCP client for external tools.
         """
-        self.llm_service = llm_service or LLMService(model=resolve_model("code"))
+        self.llm_service = llm_service or LLMService(model=resolve_model("dns"))
         self.tool_registry = tool_registry or ToolRegistry()
         self.mcp_client = mcp_client or MCPClient()
         self.tools: List[Dict[str, Any]] = []
@@ -97,7 +101,7 @@ class CodeAgent(BaseAgent):
     async def run(
         self, message: str, history: List[BaseMessage]
     ) -> Dict[str, Any]:
-        """Process a code-related user message.
+        """Process a DNS-related user message.
 
         Args:
             message: The current user message.
@@ -111,54 +115,58 @@ class CodeAgent(BaseAgent):
         mcp_tools = await self.mcp_client.list_tools()
         all_tools = local_tools + mcp_tools
 
-        # Filter to code-relevant tools
+        # Filter to DNS-relevant tools
         self.tools = [
             t for t in all_tools
-            if t.get("function", {}).get("name", "") in self.CODE_TOOL_NAMES
+            if t.get("function", {}).get("name", "") in self.DNS_TOOL_NAMES
         ]
 
         response = await self.llm_service.chat_with_tools(messages, self.tools)
         return {"message": str(response.content), "agent": self.name}
 
 
-class ResearchAgent(BaseAgent):
-    """Agent for factual research and data lookup."""
+class BackupAgent(BaseAgent):
+    """Agent for backup and restore tasks."""
 
-    name = "research"
+    name = "backup"
     system_prompt = (
-        "You are Kodee, a thorough research assistant. "
-        "You prioritize accuracy and cite sources when possible. "
-        "You gather comprehensive information and present it in an organized manner. "
-        "When uncertain, you acknowledge limitations rather than guessing."
+        "You are Kodee, a backup and recovery specialist. "
+        "You help users create backups, restore from backups, and list available backups. "
+        "You provide guidance on backup strategies, retention policies, and disaster recovery. "
+        "Always verify backup integrity and destination before proceeding."
     )
 
-    RESEARCH_TOOL_NAMES = {"search_web", "fetch_url", "get_weather", "get_time", "calculate"}
+    BACKUP_TOOL_NAMES = {
+        "backup_create",
+        "backup_restore",
+        "backup_list",
+        "backup_delete",
+        "backup_verify",
+        "get_system_info",
+    }
 
     def __init__(
         self,
         llm_service: LLMService | None = None,
         tool_registry: ToolRegistry | None = None,
         mcp_client: MCPClient | None = None,
-        rag_retriever: RAGRetriever | None = None,
     ) -> None:
-        """Initialize the research agent.
+        """Initialize the backup agent.
 
         Args:
             llm_service: LLM service for generating responses.
             tool_registry: Local tool registry.
             mcp_client: MCP client for external tools.
-            rag_retriever: RAG retriever for document lookup.
         """
-        self.llm_service = llm_service or LLMService(model=resolve_model("research"))
+        self.llm_service = llm_service or LLMService(model=resolve_model("backup"))
         self.tool_registry = tool_registry or ToolRegistry()
         self.mcp_client = mcp_client or MCPClient()
-        self.rag_retriever = rag_retriever or RAGRetriever()
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
         self, message: str, history: List[BaseMessage]
     ) -> Dict[str, Any]:
-        """Process a research-related user message.
+        """Process a backup-related user message.
 
         Args:
             message: The current user message.
@@ -167,84 +175,40 @@ class ResearchAgent(BaseAgent):
         Returns:
             Dictionary with the agent's response text.
         """
-        # Retrieve relevant documents from the knowledge base
-        retrieved_docs = await self.rag_retriever.retrieve(message, top_k=5)
-
-        if retrieved_docs:
-            augmented_message = await self.rag_retriever.augment_prompt(
-                message, retrieved_docs
-            )
-        else:
-            augmented_message = message
-
-        messages = build_messages(
-            user_message=augmented_message, history=history
-        )
+        messages = build_messages(user_message=message, history=history)
         local_tools = self.tool_registry.get_tools()
         mcp_tools = await self.mcp_client.list_tools()
         all_tools = local_tools + mcp_tools
 
-        # Filter to research-relevant tools
+        # Filter to backup-relevant tools
         self.tools = [
             t for t in all_tools
-            if t.get("function", {}).get("name", "") in self.RESEARCH_TOOL_NAMES
+            if t.get("function", {}).get("name", "") in self.BACKUP_TOOL_NAMES
         ]
 
         response = await self.llm_service.chat_with_tools(messages, self.tools)
         return {"message": str(response.content), "agent": self.name}
 
 
-class CreativeAgent(BaseAgent):
-    """Agent for creative writing and ideas."""
+class MonitoringAgent(BaseAgent):
+    """Agent for server and website monitoring tasks."""
 
-    name = "creative"
+    name = "monitoring"
     system_prompt = (
-        "You are Kodee, a creative writing assistant. "
-        "You generate imaginative, engaging, and original content. "
-        "You help with storytelling, brainstorming, poetry, marketing copy, and creative projects. "
-        "You encourage the user's creativity and offer diverse perspectives."
+        "You are Kodee, an infrastructure monitoring specialist. "
+        "You help users check server health, get website status, and monitor system metrics. "
+        "You understand uptime checks, latency, CPU/memory usage, and alert thresholds. "
+        "Provide actionable recommendations when issues are detected."
     )
 
-    def __init__(
-        self,
-        llm_service: LLMService | None = None,
-    ) -> None:
-        """Initialize the creative agent.
-
-        Args:
-            llm_service: LLM service for generating responses.
-        """
-        self.llm_service = llm_service or LLMService(model=resolve_model("creative"))
-        self.tools: List[Dict[str, Any]] = []
-
-    async def run(
-        self, message: str, history: List[BaseMessage]
-    ) -> Dict[str, Any]:
-        """Process a creative user message.
-
-        Args:
-            message: The current user message.
-            history: Previous messages in the conversation.
-
-        Returns:
-            Dictionary with the agent's response text.
-        """
-        messages = build_messages(user_message=message, history=history)
-        response = await self.llm_service.chat(messages)
-        return {"message": response, "agent": self.name}
-
-
-class DataAgent(BaseAgent):
-    """Agent for data analysis, CSV/JSON processing, and chart suggestions."""
-
-    name = "data"
-    system_prompt = (
-        "You are Kodee, a data analysis assistant. "
-        "You help analyze datasets, suggest visualizations, and explain statistical concepts. "
-        "When provided with data files, you read them, analyze the contents, and offer actionable insights."
-    )
-
-    DATA_TOOL_NAMES = {"read_file", "calculate", "get_system_info"}
+    MONITORING_TOOL_NAMES = {
+        "check_server_health",
+        "get_website_status",
+        "get_system_metrics",
+        "list_alerts",
+        "acknowledge_alert",
+        "get_system_info",
+    }
 
     def __init__(
         self,
@@ -252,14 +216,14 @@ class DataAgent(BaseAgent):
         tool_registry: ToolRegistry | None = None,
         mcp_client: MCPClient | None = None,
     ) -> None:
-        """Initialize the data agent.
+        """Initialize the monitoring agent.
 
         Args:
             llm_service: LLM service for generating responses.
             tool_registry: Local tool registry.
             mcp_client: MCP client for external tools.
         """
-        self.llm_service = llm_service or LLMService(model=resolve_model("data"))
+        self.llm_service = llm_service or LLMService(model=resolve_model("monitoring"))
         self.tool_registry = tool_registry or ToolRegistry()
         self.mcp_client = mcp_client or MCPClient()
         self.tools: List[Dict[str, Any]] = []
@@ -267,89 +231,7 @@ class DataAgent(BaseAgent):
     async def run(
         self, message: str, history: List[BaseMessage]
     ) -> Dict[str, Any]:
-        """Process a data-related user message.
-
-        Reads data files mentioned in the message, analyzes them,
-        and returns insights along with the LLM response.
-
-        Args:
-            message: The current user message.
-            history: Previous messages in the conversation.
-
-        Returns:
-            Dictionary with the agent's response text and analysis metadata.
-        """
-        # Attempt to read and analyze any CSV/JSON files referenced in the message
-        analysis: Dict[str, Any] = {}
-        file_path = self._extract_file_path(message)
-        if file_path:
-            data = parse_csv(file_path)
-            if data:
-                analysis = summarize_data(data)
-
-        messages = build_messages(user_message=message, history=history)
-        local_tools = self.tool_registry.get_tools()
-        mcp_tools = await self.mcp_client.list_tools()
-        all_tools = local_tools + mcp_tools
-
-        # Filter to data-relevant tools
-        self.tools = [
-            t for t in all_tools
-            if t.get("function", {}).get("name", "") in self.DATA_TOOL_NAMES
-        ]
-
-        response = await self.llm_service.chat_with_tools(messages, self.tools)
-        return {
-            "message": str(response.content),
-            "agent": self.name,
-            "analysis": analysis,
-        }
-
-    @staticmethod
-    def _extract_file_path(message: str) -> str | None:
-        """Heuristically extract a file path from the user message.
-
-        Args:
-            message: User message text.
-
-        Returns:
-            A potential file path, or None if none is detected.
-        """
-        import re
-
-        # Look for simple path patterns ending in .csv or .json
-        match = re.search(r"[\w./\\~-]+\.(csv|json)", message)
-        if match:
-            return match.group(0)
-        return None
-
-
-class ImageAgent(BaseAgent):
-    """Agent for image generation prompts and vision tasks."""
-
-    name = "image"
-    system_prompt = (
-        "You are Kodee, an image generation assistant. "
-        "You craft detailed prompts for image generation models and describe images. "
-        "You help users refine their visual ideas into high-quality generation prompts."
-    )
-
-    def __init__(
-        self,
-        llm_service: LLMService | None = None,
-    ) -> None:
-        """Initialize the image agent.
-
-        Args:
-            llm_service: LLM service for generating responses.
-        """
-        self.llm_service = llm_service or LLMService(model=resolve_model("image"))
-        self.tools: List[Dict[str, Any]] = []
-
-    async def run(
-        self, message: str, history: List[BaseMessage]
-    ) -> Dict[str, Any]:
-        """Process an image-related user message.
+        """Process a monitoring-related user message.
 
         Args:
             message: The current user message.
@@ -359,5 +241,15 @@ class ImageAgent(BaseAgent):
             Dictionary with the agent's response text.
         """
         messages = build_messages(user_message=message, history=history)
-        response = await self.llm_service.chat(messages)
-        return {"message": response, "agent": self.name}
+        local_tools = self.tool_registry.get_tools()
+        mcp_tools = await self.mcp_client.list_tools()
+        all_tools = local_tools + mcp_tools
+
+        # Filter to monitoring-relevant tools
+        self.tools = [
+            t for t in all_tools
+            if t.get("function", {}).get("name", "") in self.MONITORING_TOOL_NAMES
+        ]
+
+        response = await self.llm_service.chat_with_tools(messages, self.tools)
+        return {"message": str(response.content), "agent": self.name}

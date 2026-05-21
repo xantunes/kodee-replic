@@ -7,15 +7,9 @@ from langgraph.graph import END, StateGraph
 from typing_extensions import TypedDict
 
 from app.agents.base import BaseAgent
+from app.agents.handoff import HandoffClassifier
 from app.agents.router import AgentRouter
-from app.agents.specialized import (
-    CodeAgent,
-    CreativeAgent,
-    DataAgent,
-    GeneralAgent,
-    ImageAgent,
-    ResearchAgent,
-)
+from app.agents.specialized import BackupAgent, DNSAgent, GeneralAgent, MonitoringAgent
 
 MAX_HISTORY = 10
 
@@ -35,32 +29,29 @@ class Orchestrator:
     def __init__(
         self,
         router: AgentRouter | None = None,
+        handoff_classifier: HandoffClassifier | None = None,
         general_agent: BaseAgent | None = None,
-        code_agent: BaseAgent | None = None,
-        research_agent: BaseAgent | None = None,
-        creative_agent: BaseAgent | None = None,
-        data_agent: BaseAgent | None = None,
-        image_agent: BaseAgent | None = None,
+        dns_agent: BaseAgent | None = None,
+        backup_agent: BaseAgent | None = None,
+        monitoring_agent: BaseAgent | None = None,
     ) -> None:
         """Initialize the orchestrator with agents and a router.
 
         Args:
             router: AgentRouter for classifying messages.
+            handoff_classifier: HandoffClassifier for detecting human escalation.
             general_agent: Agent for general questions.
-            code_agent: Agent for programming help.
-            research_agent: Agent for factual research.
-            creative_agent: Agent for creative writing.
-            data_agent: Agent for data analysis.
-            image_agent: Agent for image generation prompts.
+            dns_agent: Agent for DNS management tasks.
+            backup_agent: Agent for backup and restore tasks.
+            monitoring_agent: Agent for monitoring tasks.
         """
         self.router = router or AgentRouter()
+        self.handoff_classifier = handoff_classifier or HandoffClassifier()
         self.agents: Dict[str, BaseAgent] = {
             "general": general_agent or GeneralAgent(),
-            "code": code_agent or CodeAgent(),
-            "research": research_agent or ResearchAgent(),
-            "creative": creative_agent or CreativeAgent(),
-            "data": data_agent or DataAgent(),
-            "image": image_agent or ImageAgent(),
+            "dns": dns_agent or DNSAgent(),
+            "backup": backup_agent or BackupAgent(),
+            "monitoring": monitoring_agent or MonitoringAgent(),
         }
         self._history: Dict[str, List[BaseMessage]] = {}
         self._agent_usage: Dict[str, List[str]] = {}
@@ -117,6 +108,16 @@ class Orchestrator:
             import uuid
 
             session_id = str(uuid.uuid4())
+
+        # Check if user is seeking human support
+        is_handoff = await self.handoff_classifier.is_seeking_human(message)
+        if is_handoff:
+            return {
+                "message": "I'm connecting you to a human agent...",
+                "agent_used": "human_handoff",
+                "actions": [],
+                "session_id": session_id,
+            }
 
         history = self._history.get(session_id, [])
 

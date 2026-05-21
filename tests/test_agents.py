@@ -7,16 +7,10 @@ import pytest
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 from app.agents.base import BaseAgent
+from app.agents.handoff import HandoffClassifier
 from app.agents.orchestrator import MAX_HISTORY, Orchestrator
 from app.agents.router import AVAILABLE_AGENTS, AgentRouter
-from app.agents.specialized import (
-    CodeAgent,
-    CreativeAgent,
-    DataAgent,
-    GeneralAgent,
-    ImageAgent,
-    ResearchAgent,
-)
+from app.agents.specialized import BackupAgent, DNSAgent, GeneralAgent, MonitoringAgent
 
 
 class DummyAgent(BaseAgent):
@@ -39,13 +33,13 @@ class TestAgentRouter:
     async def test_route_returns_valid_agent_name(self) -> None:
         """Test that route returns a valid agent name."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat = AsyncMock(return_value="code")
+        mock_llm_service.chat = AsyncMock(return_value="dns")
 
         router = AgentRouter(llm_service=mock_llm_service)
-        result = await router.route("How do I write a Python function?", [])
+        result = await router.route("Create an A record for example.com", [])
 
         assert result in AVAILABLE_AGENTS
-        assert result == "code"
+        assert result == "dns"
 
     @pytest.mark.asyncio
     async def test_route_fallback_to_general(self) -> None:
@@ -62,12 +56,12 @@ class TestAgentRouter:
     async def test_route_strips_and_lowercases(self) -> None:
         """Test that route normalizes the LLM response."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat = AsyncMock(return_value="  RESEARCH  ")
+        mock_llm_service.chat = AsyncMock(return_value="  MONITORING  ")
 
         router = AgentRouter(llm_service=mock_llm_service)
-        result = await router.route("What is the capital of France?", [])
+        result = await router.route("Is my server down?", [])
 
-        assert result == "research"
+        assert result == "monitoring"
 
     @pytest.mark.asyncio
     async def test_route_uses_routing_prompt(self) -> None:
@@ -93,35 +87,23 @@ class TestSpecializedAgents:
         assert "general-purpose" in agent.system_prompt.lower()
         assert agent.name == "general"
 
-    def test_code_agent_system_prompt(self) -> None:
-        """Test CodeAgent has the correct system prompt."""
-        agent = CodeAgent()
-        assert "programming" in agent.system_prompt.lower()
-        assert agent.name == "code"
+    def test_dns_agent_system_prompt(self) -> None:
+        """Test DNSAgent has the correct system prompt."""
+        agent = DNSAgent()
+        assert "dns" in agent.system_prompt.lower()
+        assert agent.name == "dns"
 
-    def test_research_agent_system_prompt(self) -> None:
-        """Test ResearchAgent has the correct system prompt."""
-        agent = ResearchAgent()
-        assert "research" in agent.system_prompt.lower()
-        assert agent.name == "research"
+    def test_backup_agent_system_prompt(self) -> None:
+        """Test BackupAgent has the correct system prompt."""
+        agent = BackupAgent()
+        assert "backup" in agent.system_prompt.lower()
+        assert agent.name == "backup"
 
-    def test_creative_agent_system_prompt(self) -> None:
-        """Test CreativeAgent has the correct system prompt."""
-        agent = CreativeAgent()
-        assert "creative" in agent.system_prompt.lower()
-        assert agent.name == "creative"
-
-    def test_data_agent_system_prompt(self) -> None:
-        """Test DataAgent has the correct system prompt."""
-        agent = DataAgent()
-        assert "data analysis" in agent.system_prompt.lower()
-        assert agent.name == "data"
-
-    def test_image_agent_system_prompt(self) -> None:
-        """Test ImageAgent has the correct system prompt."""
-        agent = ImageAgent()
-        assert "image generation" in agent.system_prompt.lower()
-        assert agent.name == "image"
+    def test_monitoring_agent_system_prompt(self) -> None:
+        """Test MonitoringAgent has the correct system prompt."""
+        agent = MonitoringAgent()
+        assert "monitoring" in agent.system_prompt.lower()
+        assert agent.name == "monitoring"
 
     @pytest.mark.asyncio
     async def test_general_agent_run(self) -> None:
@@ -146,11 +128,11 @@ class TestSpecializedAgents:
         assert result["agent"] == "general"
 
     @pytest.mark.asyncio
-    async def test_code_agent_run(self) -> None:
-        """Test CodeAgent run method."""
+    async def test_dns_agent_run(self) -> None:
+        """Test DNSAgent run method."""
         mock_llm_service = MagicMock()
         mock_llm_service.chat_with_tools = AsyncMock(
-            return_value=AIMessage(content="Code response")
+            return_value=AIMessage(content="DNS response")
         )
 
         with patch(
@@ -161,18 +143,18 @@ class TestSpecializedAgents:
             mock_mcp_client.return_value.list_tools = AsyncMock(return_value=[])
             mock_tool_registry.return_value.get_tools = MagicMock(return_value=[])
 
-            agent = CodeAgent(llm_service=mock_llm_service)
-            result = await agent.run("Write a function", [])
+            agent = DNSAgent(llm_service=mock_llm_service)
+            result = await agent.run("Create an A record", [])
 
-        assert result["message"] == "Code response"
-        assert result["agent"] == "code"
+        assert result["message"] == "DNS response"
+        assert result["agent"] == "dns"
 
     @pytest.mark.asyncio
-    async def test_research_agent_run(self) -> None:
-        """Test ResearchAgent run method."""
+    async def test_backup_agent_run(self) -> None:
+        """Test BackupAgent run method."""
         mock_llm_service = MagicMock()
         mock_llm_service.chat_with_tools = AsyncMock(
-            return_value=AIMessage(content="Research response")
+            return_value=AIMessage(content="Backup response")
         )
 
         with patch(
@@ -183,30 +165,18 @@ class TestSpecializedAgents:
             mock_mcp_client.return_value.list_tools = AsyncMock(return_value=[])
             mock_tool_registry.return_value.get_tools = MagicMock(return_value=[])
 
-            agent = ResearchAgent(llm_service=mock_llm_service)
-            result = await agent.run("What is quantum computing?", [])
+            agent = BackupAgent(llm_service=mock_llm_service)
+            result = await agent.run("Create a backup", [])
 
-        assert result["message"] == "Research response"
-        assert result["agent"] == "research"
-
-    @pytest.mark.asyncio
-    async def test_creative_agent_run(self) -> None:
-        """Test CreativeAgent run method."""
-        mock_llm_service = MagicMock()
-        mock_llm_service.chat = AsyncMock(return_value="Creative response")
-
-        agent = CreativeAgent(llm_service=mock_llm_service)
-        result = await agent.run("Write a poem", [])
-
-        assert result["message"] == "Creative response"
-        assert result["agent"] == "creative"
+        assert result["message"] == "Backup response"
+        assert result["agent"] == "backup"
 
     @pytest.mark.asyncio
-    async def test_data_agent_run(self) -> None:
-        """Test DataAgent run method."""
+    async def test_monitoring_agent_run(self) -> None:
+        """Test MonitoringAgent run method."""
         mock_llm_service = MagicMock()
         mock_llm_service.chat_with_tools = AsyncMock(
-            return_value=AIMessage(content="Data response")
+            return_value=AIMessage(content="Monitoring response")
         )
 
         with patch(
@@ -217,38 +187,26 @@ class TestSpecializedAgents:
             mock_mcp_client.return_value.list_tools = AsyncMock(return_value=[])
             mock_tool_registry.return_value.get_tools = MagicMock(return_value=[])
 
-            agent = DataAgent(llm_service=mock_llm_service)
-            result = await agent.run("Analyze my sales.csv", [])
+            agent = MonitoringAgent(llm_service=mock_llm_service)
+            result = await agent.run("Check server health", [])
 
-        assert result["message"] == "Data response"
-        assert result["agent"] == "data"
-
-    @pytest.mark.asyncio
-    async def test_image_agent_run(self) -> None:
-        """Test ImageAgent run method."""
-        mock_llm_service = MagicMock()
-        mock_llm_service.chat = AsyncMock(return_value="Image prompt response")
-
-        agent = ImageAgent(llm_service=mock_llm_service)
-        result = await agent.run("Create a prompt for a sunset", [])
-
-        assert result["message"] == "Image prompt response"
-        assert result["agent"] == "image"
+        assert result["message"] == "Monitoring response"
+        assert result["agent"] == "monitoring"
 
     @pytest.mark.asyncio
-    async def test_code_agent_filters_tools(self) -> None:
-        """Test CodeAgent filters to code-relevant tools."""
+    async def test_dns_agent_filters_tools(self) -> None:
+        """Test DNSAgent filters to DNS-relevant tools."""
         mock_llm_service = MagicMock()
         mock_llm_service.chat_with_tools = AsyncMock(
-            return_value=AIMessage(content="Code response")
+            return_value=AIMessage(content="DNS response")
         )
 
         all_tools = [
-            {"function": {"name": "read_file"}},
-            {"function": {"name": "write_file"}},
-            {"function": {"name": "run_command"}},
+            {"function": {"name": "dns_create_record"}},
+            {"function": {"name": "dns_list_records"}},
+            {"function": {"name": "dns_delete_record"}},
             {"function": {"name": "get_weather"}},
-            {"function": {"name": "search_web"}},
+            {"function": {"name": "backup_create"}},
         ]
 
         with patch(
@@ -259,31 +217,31 @@ class TestSpecializedAgents:
             mock_mcp_client.return_value.list_tools = AsyncMock(return_value=all_tools)
             mock_tool_registry.return_value.get_tools = MagicMock(return_value=[])
 
-            agent = CodeAgent(llm_service=mock_llm_service)
-            await agent.run("Fix my bug", [])
+            agent = DNSAgent(llm_service=mock_llm_service)
+            await agent.run("Create a record", [])
 
             tool_names = {
                 t["function"]["name"] for t in agent.tools
             }
-            assert "read_file" in tool_names
-            assert "write_file" in tool_names
-            assert "run_command" in tool_names
+            assert "dns_create_record" in tool_names
+            assert "dns_list_records" in tool_names
+            assert "dns_delete_record" in tool_names
             assert "get_weather" not in tool_names
-            assert "search_web" not in tool_names
+            assert "backup_create" not in tool_names
 
     @pytest.mark.asyncio
-    async def test_research_agent_filters_tools(self) -> None:
-        """Test ResearchAgent filters to research-relevant tools."""
+    async def test_backup_agent_filters_tools(self) -> None:
+        """Test BackupAgent filters to backup-relevant tools."""
         mock_llm_service = MagicMock()
         mock_llm_service.chat_with_tools = AsyncMock(
-            return_value=AIMessage(content="Research response")
+            return_value=AIMessage(content="Backup response")
         )
 
         all_tools = [
-            {"function": {"name": "search_web"}},
-            {"function": {"name": "fetch_url"}},
-            {"function": {"name": "get_weather"}},
-            {"function": {"name": "read_file"}},
+            {"function": {"name": "backup_create"}},
+            {"function": {"name": "backup_restore"}},
+            {"function": {"name": "backup_list"}},
+            {"function": {"name": "dns_create_record"}},
         ]
 
         with patch(
@@ -294,16 +252,92 @@ class TestSpecializedAgents:
             mock_mcp_client.return_value.list_tools = AsyncMock(return_value=all_tools)
             mock_tool_registry.return_value.get_tools = MagicMock(return_value=[])
 
-            agent = ResearchAgent(llm_service=mock_llm_service)
-            await agent.run("Research topic", [])
+            agent = BackupAgent(llm_service=mock_llm_service)
+            await agent.run("Restore backup", [])
 
             tool_names = {
                 t["function"]["name"] for t in agent.tools
             }
-            assert "search_web" in tool_names
-            assert "fetch_url" in tool_names
-            assert "get_weather" in tool_names
-            assert "read_file" not in tool_names
+            assert "backup_create" in tool_names
+            assert "backup_restore" in tool_names
+            assert "backup_list" in tool_names
+            assert "dns_create_record" not in tool_names
+
+    @pytest.mark.asyncio
+    async def test_monitoring_agent_filters_tools(self) -> None:
+        """Test MonitoringAgent filters to monitoring-relevant tools."""
+        mock_llm_service = MagicMock()
+        mock_llm_service.chat_with_tools = AsyncMock(
+            return_value=AIMessage(content="Monitoring response")
+        )
+
+        all_tools = [
+            {"function": {"name": "check_server_health"}},
+            {"function": {"name": "get_website_status"}},
+            {"function": {"name": "get_system_metrics"}},
+            {"function": {"name": "backup_create"}},
+        ]
+
+        with patch(
+            "app.agents.specialized.MCPClient"
+        ) as mock_mcp_client, patch(
+            "app.agents.specialized.ToolRegistry"
+        ) as mock_tool_registry:
+            mock_mcp_client.return_value.list_tools = AsyncMock(return_value=all_tools)
+            mock_tool_registry.return_value.get_tools = MagicMock(return_value=[])
+
+            agent = MonitoringAgent(llm_service=mock_llm_service)
+            await agent.run("Is my site up?", [])
+
+            tool_names = {
+                t["function"]["name"] for t in agent.tools
+            }
+            assert "check_server_health" in tool_names
+            assert "get_website_status" in tool_names
+            assert "get_system_metrics" in tool_names
+            assert "backup_create" not in tool_names
+
+
+class TestHandoffClassifier:
+    """Tests for HandoffClassifier."""
+
+    @pytest.mark.asyncio
+    async def test_detects_human_escalation_yes(self) -> None:
+        """Test that handoff classifier returns True when LLM says yes."""
+        mock_llm_service = MagicMock()
+        mock_llm_service.chat = AsyncMock(return_value="yes")
+
+        classifier = HandoffClassifier(llm_service=mock_llm_service)
+        result = await classifier.is_seeking_human("I want to speak to a human")
+
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_detects_human_escalation_no(self) -> None:
+        """Test that handoff classifier returns False when LLM says no."""
+        mock_llm_service = MagicMock()
+        mock_llm_service.chat = AsyncMock(return_value="no")
+
+        classifier = HandoffClassifier(llm_service=mock_llm_service)
+        result = await classifier.is_seeking_human("What is the weather?")
+
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_uses_handoff_prompt(self) -> None:
+        """Test that handoff sends the correct prompt to the LLM."""
+        mock_llm_service = MagicMock()
+        mock_llm_service.chat = AsyncMock(return_value="no")
+
+        classifier = HandoffClassifier(llm_service=mock_llm_service)
+        await classifier.is_seeking_human("Hello")
+
+        call_args = mock_llm_service.chat.await_args
+        messages = call_args[0][0]
+        assert len(messages) == 2
+        assert "human" in messages[0].content.lower()
+        assert "yes" in messages[0].content.lower()
+        assert "no" in messages[0].content.lower()
 
 
 class TestOrchestrator:
@@ -315,6 +349,9 @@ class TestOrchestrator:
         mock_router = MagicMock()
         mock_router.route = AsyncMock(return_value="general")
 
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=False)
+
         mock_general_agent = MagicMock()
         mock_general_agent.run = AsyncMock(
             return_value={"message": "Hello!", "agent": "general"}
@@ -322,6 +359,7 @@ class TestOrchestrator:
 
         orchestrator = Orchestrator(
             router=mock_router,
+            handoff_classifier=mock_handoff,
             general_agent=mock_general_agent,
         )
 
@@ -334,10 +372,34 @@ class TestOrchestrator:
         assert result["session_id"] == "session-1"
 
     @pytest.mark.asyncio
+    async def test_orchestrator_handles_handoff(self) -> None:
+        """Test that orchestrator returns human handoff message when user seeks human."""
+        mock_router = MagicMock()
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=True)
+
+        orchestrator = Orchestrator(
+            router=mock_router,
+            handoff_classifier=mock_handoff,
+        )
+
+        result = await orchestrator.process(
+            user_id="user-1", message="I want to speak to a human", session_id="session-1"
+        )
+
+        assert result["message"] == "I'm connecting you to a human agent..."
+        assert result["agent_used"] == "human_handoff"
+        assert result["session_id"] == "session-1"
+        mock_router.route.assert_not_called()
+
+    @pytest.mark.asyncio
     async def test_orchestrator_maintains_history(self) -> None:
         """Test that orchestrator maintains conversation history across turns."""
         mock_router = MagicMock()
         mock_router.route = AsyncMock(return_value="general")
+
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=False)
 
         mock_general_agent = MagicMock()
         mock_general_agent.run = AsyncMock(
@@ -349,6 +411,7 @@ class TestOrchestrator:
 
         orchestrator = Orchestrator(
             router=mock_router,
+            handoff_classifier=mock_handoff,
             general_agent=mock_general_agent,
         )
 
@@ -376,6 +439,9 @@ class TestOrchestrator:
         mock_router = MagicMock()
         mock_router.route = AsyncMock(return_value="general")
 
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=False)
+
         mock_general_agent = MagicMock()
         mock_general_agent.run = AsyncMock(
             side_effect=[
@@ -386,6 +452,7 @@ class TestOrchestrator:
 
         orchestrator = Orchestrator(
             router=mock_router,
+            handoff_classifier=mock_handoff,
             general_agent=mock_general_agent,
         )
 
@@ -408,49 +475,56 @@ class TestOrchestrator:
         """Test that orchestrator tracks which agent handled each turn."""
         mock_router = MagicMock()
         mock_router.route = AsyncMock(
-            side_effect=["general", "code", "research"]
+            side_effect=["general", "dns", "backup"]
         )
+
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=False)
 
         mock_general_agent = MagicMock()
         mock_general_agent.run = AsyncMock(
             return_value={"message": "General!", "agent": "general"}
         )
 
-        mock_code_agent = MagicMock()
-        mock_code_agent.run = AsyncMock(
-            return_value={"message": "Code!", "agent": "code"}
+        mock_dns_agent = MagicMock()
+        mock_dns_agent.run = AsyncMock(
+            return_value={"message": "DNS!", "agent": "dns"}
         )
 
-        mock_research_agent = MagicMock()
-        mock_research_agent.run = AsyncMock(
-            return_value={"message": "Research!", "agent": "research"}
+        mock_backup_agent = MagicMock()
+        mock_backup_agent.run = AsyncMock(
+            return_value={"message": "Backup!", "agent": "backup"}
         )
 
         orchestrator = Orchestrator(
             router=mock_router,
+            handoff_classifier=mock_handoff,
             general_agent=mock_general_agent,
-            code_agent=mock_code_agent,
-            research_agent=mock_research_agent,
+            dns_agent=mock_dns_agent,
+            backup_agent=mock_backup_agent,
         )
 
         await orchestrator.process(
             user_id="user-1", message="Hi", session_id="session-1"
         )
         await orchestrator.process(
-            user_id="user-1", message="Fix bug", session_id="session-1"
+            user_id="user-1", message="Create DNS record", session_id="session-1"
         )
         await orchestrator.process(
-            user_id="user-1", message="Lookup fact", session_id="session-1"
+            user_id="user-1", message="Backup my server", session_id="session-1"
         )
 
         usage = orchestrator.get_agent_usage("session-1")
-        assert usage == ["general", "code", "research"]
+        assert usage == ["general", "dns", "backup"]
 
     @pytest.mark.asyncio
     async def test_orchestrator_generates_session_id(self) -> None:
         """Test that orchestrator generates a session_id if not provided."""
         mock_router = MagicMock()
         mock_router.route = AsyncMock(return_value="general")
+
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=False)
 
         mock_general_agent = MagicMock()
         mock_general_agent.run = AsyncMock(
@@ -459,6 +533,7 @@ class TestOrchestrator:
 
         orchestrator = Orchestrator(
             router=mock_router,
+            handoff_classifier=mock_handoff,
             general_agent=mock_general_agent,
         )
 
@@ -478,101 +553,41 @@ class TestOrchestratorHandoff:
         """Test that two messages can be routed to different agents."""
         mock_router = MagicMock()
         mock_router.route = AsyncMock(
-            side_effect=["creative", "code"]
+            side_effect=["dns", "backup"]
         )
 
-        mock_creative_agent = MagicMock()
-        mock_creative_agent.run = AsyncMock(
-            return_value={"message": "A poem", "agent": "creative"}
+        mock_handoff = MagicMock()
+        mock_handoff.is_seeking_human = AsyncMock(return_value=False)
+
+        mock_dns_agent = MagicMock()
+        mock_dns_agent.run = AsyncMock(
+            return_value={"message": "DNS record created", "agent": "dns"}
         )
 
-        mock_code_agent = MagicMock()
-        mock_code_agent.run = AsyncMock(
-            return_value={"message": "def hello(): pass", "agent": "code"}
+        mock_backup_agent = MagicMock()
+        mock_backup_agent.run = AsyncMock(
+            return_value={"message": "Backup started", "agent": "backup"}
         )
 
         orchestrator = Orchestrator(
             router=mock_router,
-            creative_agent=mock_creative_agent,
-            code_agent=mock_code_agent,
+            handoff_classifier=mock_handoff,
+            dns_agent=mock_dns_agent,
+            backup_agent=mock_backup_agent,
         )
 
         result1 = await orchestrator.process(
-            user_id="user-1", message="Write a poem", session_id="session-1"
+            user_id="user-1", message="Create a DNS record", session_id="session-1"
         )
         result2 = await orchestrator.process(
-            user_id="user-1", message="Write a function", session_id="session-1"
+            user_id="user-1", message="Start a backup", session_id="session-1"
         )
 
-        assert result1["agent_used"] == "creative"
-        assert result2["agent_used"] == "code"
-        assert mock_creative_agent.run.await_count == 1
-        assert mock_code_agent.run.await_count == 1
+        assert result1["agent_used"] == "dns"
+        assert result2["agent_used"] == "backup"
+        assert mock_dns_agent.run.await_count == 1
+        assert mock_backup_agent.run.await_count == 1
 
         # Verify history contains both interactions
         history = orchestrator.get_history("session-1")
         assert len(history) == 4
-
-
-class TestDataTools:
-    """Tests for data analysis helper functions."""
-
-    def test_parse_csv_reads_rows(self, tmp_path) -> None:
-        """Test parse_csv returns correct row dictionaries."""
-        from app.agents.data_tools import parse_csv
-
-        csv_file = tmp_path / "sample.csv"
-        csv_file.write_text("name,age\nAlice,30\nBob,25\n")
-
-        result = parse_csv(str(csv_file))
-        assert len(result) == 2
-        assert result[0]["name"] == "Alice"
-        assert result[0]["age"] == "30"
-        assert result[1]["name"] == "Bob"
-
-    def test_parse_csv_missing_file(self, tmp_path) -> None:
-        """Test parse_csv returns empty list for missing file."""
-        from app.agents.data_tools import parse_csv
-
-        result = parse_csv(str(tmp_path / "nonexistent.csv"))
-        assert result == []
-
-    def test_summarize_data_numeric(self) -> None:
-        """Test summarize_data computes stats for numeric columns."""
-        from app.agents.data_tools import summarize_data
-
-        data = [
-            {"name": "Alice", "score": "100"},
-            {"name": "Bob", "score": "200"},
-            {"name": "Charlie", "score": "300"},
-        ]
-        result = summarize_data(data)
-
-        assert result["count"] == 3
-        assert "score" in result["columns"]
-        assert result["columns"]["score"]["type"] == "numeric"
-        assert result["columns"]["score"]["mean"] == 200.0
-        assert result["columns"]["score"]["min"] == 100.0
-        assert result["columns"]["score"]["max"] == 300.0
-        assert result["columns"]["score"]["sum"] == 600.0
-
-    def test_summarize_data_text_column(self) -> None:
-        """Test summarize_data identifies text columns."""
-        from app.agents.data_tools import summarize_data
-
-        data = [
-            {"name": "Alice", "score": "100"},
-            {"name": "Bob", "score": "200"},
-        ]
-        result = summarize_data(data)
-
-        assert result["columns"]["name"]["type"] == "text"
-        assert result["columns"]["name"]["non_null_count"] == 2
-
-    def test_summarize_data_empty(self) -> None:
-        """Test summarize_data handles empty data."""
-        from app.agents.data_tools import summarize_data
-
-        result = summarize_data([])
-        assert result["count"] == 0
-        assert result["columns"] == {}

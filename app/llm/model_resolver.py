@@ -6,22 +6,20 @@ from app.config import settings
 _DEFAULT_MODELS: dict[str, str] = {
     "router": "gpt-4.1-mini",
     "general": "gpt-4.1-mini",
-    "creative": "gpt-4.1-mini",
-    "image": "gpt-4.1-mini",
-    "code": "gpt-4.1",
-    "research": "gpt-4.1",
-    "data": "gpt-4.1",
+    "dns": "gpt-4.1",
+    "backup": "gpt-4.1",
+    "monitoring": "gpt-4.1",
+    "handoff": "gpt-4.1-mini",
 }
 
 # Environment variable overrides from settings
 _ENV_OVERRIDES: dict[str, str] = {
     "router": settings.MODEL_ROUTER,
     "general": settings.MODEL_GENERAL,
-    "creative": settings.MODEL_CREATIVE,
-    "image": settings.MODEL_IMAGE,
-    "code": settings.MODEL_CODE,
-    "research": settings.MODEL_RESEARCH,
-    "data": settings.MODEL_DATA,
+    "dns": settings.MODEL_DNS,
+    "backup": settings.MODEL_BACKUP,
+    "monitoring": settings.MODEL_MONITORING,
+    "handoff": settings.MODEL_HANDOFF,
 }
 
 

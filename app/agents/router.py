@@ -10,15 +10,13 @@ from app.llm.model_resolver import resolve_model
 ROUTING_PROMPT = (
     "Given the user message, classify into one of: "
     "general (chitchat, simple questions), "
-    "code (programming, debugging), "
-    "research (facts, data lookup), "
-    "creative (writing, ideas), "
-    "data (data analysis, CSV/JSON processing, charts), "
-    "image (image generation prompts, vision tasks). "
+    "dns (DNS management tasks, create/list/delete DNS records), "
+    "backup (backup and restore tasks, create/restore/list backups), "
+    "monitoring (server health checks, website status, system metrics). "
     "Respond with ONLY the agent name."
 )
 
-AVAILABLE_AGENTS = {"general", "code", "research", "creative", "data", "image"}
+AVAILABLE_AGENTS = {"general", "dns", "backup", "monitoring"}
 
 
 class AgentRouter:
