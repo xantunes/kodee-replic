@@ -3,8 +3,6 @@
 import uuid
 from datetime import datetime, timezone
 
-import pytest
-
 from app.models.database import Conversation, Message, ToolExecution, now_utc
 
 
