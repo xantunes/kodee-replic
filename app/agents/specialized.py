@@ -4,8 +4,8 @@ from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage
 
-from app.agents.base import BaseAgent
-from app.llm.llm_service import LLMService
+from app.agents.base_agent import BaseAgent
+from app.services.llm_service import LLMService
 from app.llm.model_resolver import resolve_model
 from app.llm.prompts import build_messages
 from app.llm.tool_registry import ToolRegistry

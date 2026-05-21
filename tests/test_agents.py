@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
-from app.agents.base import BaseAgent
+from app.agents.base_agent import BaseAgent
 from app.agents.handoff import HandoffClassifier
 from app.agents.orchestrator import MAX_HISTORY, Orchestrator
 from app.agents.router import AVAILABLE_AGENTS, AgentRouter

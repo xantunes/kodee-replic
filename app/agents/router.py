@@ -4,7 +4,7 @@ from typing import List
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
-from app.llm.llm_service import LLMService
+from app.services.llm_service import LLMService
 from app.llm.model_resolver import resolve_model
 
 ROUTING_PROMPT = (

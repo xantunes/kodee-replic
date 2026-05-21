@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 from app.agents.orchestrator import Orchestrator
 from app.config import settings
-from app.llm.llm_service import LLMService
+from app.services.llm_service import LLMService
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
 

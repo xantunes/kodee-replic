@@ -10,7 +10,7 @@ from starlette.testclient import TestClient
 
 from app.agents.orchestrator import Orchestrator
 from app.agents.router import AgentRouter
-from app.llm.llm_service import LLMService
+from app.services.llm_service import LLMService
 from app.main import app as fastapi_app
 from app.services.chat_service import ChatService
 

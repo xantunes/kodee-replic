@@ -6,7 +6,7 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langgraph.graph import END, StateGraph
 from typing_extensions import TypedDict
 
-from app.agents.base import BaseAgent
+from app.agents.base_agent import BaseAgent
 from app.agents.handoff import HandoffClassifier
 from app.agents.router import AgentRouter
 from app.agents.specialized import BackupAgent, DNSAgent, GeneralAgent, MonitoringAgent

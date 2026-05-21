@@ -8,7 +8,7 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
 from app.config import Settings
-from app.llm.llm_service import LLMService
+from app.services.llm_service import LLMService
 from app.main import app
 
 

@@ -2,7 +2,7 @@
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
-from app.llm.llm_service import LLMService
+from app.services.llm_service import LLMService
 from app.llm.model_resolver import resolve_model
 
 

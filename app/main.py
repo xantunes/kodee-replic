@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from app.config import settings
 from app.models.chat import ChatRequest, ChatResponse
 import app.utils.monitoring as monitoring
-from app.monitoring import (
+from app.utils.monitoring import (
     add_request_middleware,
     get_logger,
     init_logging,

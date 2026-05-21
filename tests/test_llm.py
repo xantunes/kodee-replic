@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
-from app.llm.llm_service import LLMService
+from app.services.llm_service import LLMService
 from app.llm.prompts import SYSTEM_PROMPT, build_messages
 from app.llm.tool_registry import ToolRegistry
 from app.services.chat_service import ChatService
@@ -99,7 +99,7 @@ class TestLLMService:
         mock_llm = MagicMock()
         mock_llm.ainvoke = AsyncMock(return_value=AIMessage(content="Hello!"))
 
-        with patch("app.llm.llm_service._create_llm", return_value=mock_llm):
+        with patch("app.services.llm_service._create_llm", return_value=mock_llm):
             service = LLMService()
             messages = [SystemMessage(content="System"), HumanMessage(content="Hi")]
             result = await service.chat(messages)
@@ -112,7 +112,7 @@ class TestLLMService:
         mock_llm = MagicMock()
         mock_llm.ainvoke = AsyncMock(side_effect=Exception("API Error"))
 
-        with patch("app.llm.llm_service._create_llm", return_value=mock_llm):
+        with patch("app.services.llm_service._create_llm", return_value=mock_llm):
             service = LLMService()
             messages = [HumanMessage(content="Hi")]
             result = await service.chat(messages)
@@ -125,7 +125,7 @@ class TestLLMService:
         mock_llm.bind_tools = MagicMock(return_value=mock_llm)
         mock_llm.ainvoke = AsyncMock(return_value=AIMessage(content="Response"))
 
-        with patch("app.llm.llm_service._create_llm", return_value=mock_llm):
+        with patch("app.services.llm_service._create_llm", return_value=mock_llm):
             service = LLMService()
             messages = [HumanMessage(content="Hi")]
             tools: List[Dict[str, Any]] = []
