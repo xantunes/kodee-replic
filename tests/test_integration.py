@@ -237,3 +237,31 @@ class TestIntegrationMultiTurn:
 
         usage = orchestrator.get_agent_usage("route-session")
         assert usage == ["dns", "backup", "monitoring"]
+
+
+class TestIntegrationRateLimit:
+    """Integration tests for rate limiting middleware."""
+
+    @pytest.mark.asyncio
+    async def test_rate_limit_blocks_excess_requests(self) -> None:
+        """Requests over the rate limit should return 429."""
+        from fastapi import FastAPI
+        from httpx import AsyncClient
+        import httpx
+
+        from app.utils.rate_limit import RateLimitMiddleware
+
+        app = FastAPI()
+        app.add_middleware(RateLimitMiddleware, max_requests=1, window_seconds=60)
+
+        @app.get("/test")
+        async def test_endpoint() -> dict:
+            return {"ok": True}
+
+        async with AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            r1 = await client.get("/test")
+            assert r1.status_code == 200
+
+            r2 = await client.get("/test")
+            assert r2.status_code == 429
+            assert "Rate limit exceeded" in r2.text
