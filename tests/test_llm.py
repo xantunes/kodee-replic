@@ -142,13 +142,17 @@ class TestChatServiceWithLLM:
 
     @pytest.mark.asyncio
     async def test_process_message_with_mocked_llm(self) -> None:
-        """Test process_message with a mocked LLM response."""
-        mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
-            return_value=AIMessage(content="Mocked response")
+        """Test process_message with a mocked orchestrator response."""
+        mock_orchestrator = MagicMock()
+        mock_orchestrator.process = AsyncMock(
+            return_value={
+                "message": "Mocked response",
+                "actions": [],
+                "session_id": "test-session",
+            }
         )
 
-        chat_service = ChatService(llm_service=mock_llm_service)
+        chat_service = ChatService(orchestrator=mock_orchestrator)
 
         with patch.object(chat_service.settings, "OPENAI_API_KEY", "test-key"):
             result = await chat_service.process_message(
@@ -162,25 +166,24 @@ class TestChatServiceWithLLM:
 
     @pytest.mark.asyncio
     async def test_process_message_with_tool_call(self) -> None:
-        """Test process_message when LLM requests a tool call."""
-        mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
-            side_effect=[
-                AIMessage(
-                    content="",
-                    tool_calls=[
-                        {
-                            "name": "calculate",
-                            "args": {"expression": "2 + 2"},
-                            "id": "call_123",
-                        }
-                    ],
-                ),
-                AIMessage(content="The result is 4."),
-            ]
+        """Test process_message returns actions from orchestrator."""
+        mock_orchestrator = MagicMock()
+        mock_orchestrator.process = AsyncMock(
+            return_value={
+                "message": "The result is 4.",
+                "actions": [
+                    {
+                        "tool": "calculate",
+                        "args": {"expression": "2 + 2"},
+                        "result": "4",
+                        "source": "local",
+                    }
+                ],
+                "session_id": "test-session",
+            }
         )
 
-        chat_service = ChatService(llm_service=mock_llm_service)
+        chat_service = ChatService(orchestrator=mock_orchestrator)
 
         with patch.object(chat_service.settings, "OPENAI_API_KEY", "test-key"):
             result = await chat_service.process_message(
