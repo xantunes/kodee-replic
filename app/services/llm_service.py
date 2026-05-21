@@ -1,10 +1,15 @@
 """LLM service for interacting with OpenAI or Azure OpenAI via LangChain."""
 
-from typing import Any, Dict, List
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Union
 
-from langchain_core.messages import AIMessage, BaseMessage
+from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
 
 from app.config import settings
+from app.utils.security import DESTRUCTIVE_TOOLS
+
+MAX_TOOL_ITERATIONS = 5
+
+ToolExecutor = Callable[[str, Dict[str, Any]], Union[str, Awaitable[str]]]
 
 
 def _create_llm(model_override: str = "") -> Any:
@@ -80,6 +85,86 @@ class LLMService:
         try:
             llm_with_tools = self.llm.bind_tools(tools)
             response = await llm_with_tools.ainvoke(messages)
+            return response
+        except Exception as e:
+            return AIMessage(content=f"I'm sorry, I encountered an error: {str(e)}")
+
+    async def chat_with_tools_react(
+        self,
+        messages: List[BaseMessage],
+        tools: List[Dict[str, Any]],
+        execute_local_tool: Optional[ToolExecutor] = None,
+        execute_mcp_tool: Optional[ToolExecutor] = None,
+    ) -> AIMessage:
+        """ReAct loop: chat with tools, execute tool calls, and return final response.
+
+        Iterates up to MAX_TOOL_ITERATIONS, executing any tool_calls returned by
+        the LLM and feeding results back into the conversation.
+
+        Args:
+            messages: List of LangChain messages.
+            tools: List of tool definitions in OpenAI format.
+            execute_local_tool: Callback for executing local registry tools.
+            execute_mcp_tool: Callback for executing MCP server tools.
+
+        Returns:
+            Final AIMessage after all tool calls are resolved.
+        """
+        import asyncio
+        import inspect
+
+        async def _exec(executor: Optional[ToolExecutor], name: str, args: Dict[str, Any]) -> str:
+            if executor is None:
+                return ""
+            try:
+                result = executor(name, args)
+                if inspect.isawaitable(result):
+                    result = await result
+                return str(result)
+            except Exception as e:
+                return f"Error executing tool '{name}': {e}"
+
+        try:
+            llm_with_tools = self.llm.bind_tools(tools)
+            current_messages = list(messages)
+
+            for _ in range(MAX_TOOL_ITERATIONS):
+                response = await llm_with_tools.ainvoke(current_messages)
+
+                if not response.tool_calls:
+                    return response
+
+                current_messages.append(response)
+
+                for tool_call in response.tool_calls:
+                    name = tool_call.get("name", "")
+                    args = tool_call.get("args", {})
+                    tool_call_id = tool_call.get("id", "")
+
+                    # Destructive actions require user confirmation
+                    if name in DESTRUCTIVE_TOOLS and not args.get("confirmed"):
+                        return AIMessage(
+                            content=(
+                                f"I need your confirmation before proceeding with `{name}`. "
+                                f"This action may be destructive. Please confirm if you want to continue."
+                            ),
+                            tool_calls=[],
+                        )
+
+                    # Try local tool first, then MCP
+                    result = await _exec(execute_local_tool, name, args)
+                    if not result or result.startswith("Error"):
+                        mcp_result = await _exec(execute_mcp_tool, name, args)
+                        if mcp_result and not mcp_result.startswith("Error"):
+                            result = mcp_result
+                    if not result:
+                        result = f"Error: Tool '{name}' is not available."
+
+                    current_messages.append(
+                        ToolMessage(content=result, tool_call_id=tool_call_id)
+                    )
+
+            # Max iterations reached — return last response
             return response
         except Exception as e:
             return AIMessage(content=f"I'm sorry, I encountered an error: {str(e)}")

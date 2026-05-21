@@ -8,6 +8,7 @@ from app.config import settings
 from app.services.llm_service import LLMService
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
+from app.utils.security import validate_chat_input
 
 
 class ChatService:
@@ -45,6 +46,20 @@ class ChatService:
         """
         if session_id is None:
             session_id = str(uuid.uuid4())
+
+        # Security: validate and sanitize user input
+        validation = validate_chat_input(message)
+        if not validation["safe"]:
+            return {
+                "message": (
+                    "I can't process that request because it contains "
+                    f"potentially harmful content ({', '.join(validation['issues'])}). "
+                    "Please rephrase your question."
+                ),
+                "actions": [],
+                "session_id": session_id,
+            }
+        message = validation["sanitized"]
 
         # Fallback to echo if OPENAI_API_KEY is not configured
         if not self.settings.OPENAI_API_KEY:

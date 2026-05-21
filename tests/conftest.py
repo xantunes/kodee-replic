@@ -50,4 +50,7 @@ def mock_llm_service() -> MagicMock:
     mock.chat_with_tools = AsyncMock(
         return_value=MagicMock(content="Mocked tool response")
     )
+    mock.chat_with_tools_react = AsyncMock(
+        return_value=MagicMock(content="Mocked tool response")
+    )
     return mock

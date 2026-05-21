@@ -10,6 +10,8 @@ from app.agents.base_agent import BaseAgent
 from app.agents.handoff import HandoffClassifier
 from app.agents.router import AgentRouter
 from app.agents.specialized import BackupAgent, DNSAgent, GeneralAgent, MonitoringAgent
+from app.rag.retriever import RAGRetriever
+from app.utils.session_store import InMemorySessionStore, SessionStore
 
 MAX_HISTORY = 10
 
@@ -34,6 +36,8 @@ class Orchestrator:
         dns_agent: BaseAgent | None = None,
         backup_agent: BaseAgent | None = None,
         monitoring_agent: BaseAgent | None = None,
+        retriever: RAGRetriever | None = None,
+        session_store: SessionStore | None = None,
     ) -> None:
         """Initialize the orchestrator with agents and a router.
 
@@ -44,6 +48,8 @@ class Orchestrator:
             dns_agent: Agent for DNS management tasks.
             backup_agent: Agent for backup and restore tasks.
             monitoring_agent: Agent for monitoring tasks.
+            retriever: RAG retriever for knowledge base augmentation.
+            session_store: Optional persistent session store (e.g., Redis).
         """
         self.router = router or AgentRouter()
         self.handoff_classifier = handoff_classifier or HandoffClassifier()
@@ -53,6 +59,8 @@ class Orchestrator:
             "backup": backup_agent or BackupAgent(),
             "monitoring": monitoring_agent or MonitoringAgent(),
         }
+        self.retriever = retriever or RAGRetriever()
+        self.session_store = session_store or InMemorySessionStore()
         self._history: Dict[str, List[BaseMessage]] = {}
         self._agent_usage: Dict[str, List[str]] = {}
         self._graph = self._build_graph()
@@ -121,6 +129,18 @@ class Orchestrator:
 
         history = self._history.get(session_id, [])
 
+        # RAG: retrieve relevant knowledge base documents
+        try:
+            retrieved_docs = await self.retriever.retrieve(message, top_k=5)
+            if retrieved_docs:
+                augmented_message = await self.retriever.augment_prompt(
+                    message, retrieved_docs
+                )
+                message = augmented_message
+        except Exception:
+            # Graceful degradation: proceed without RAG if retrieval fails
+            pass
+
         state: OrchestratorState = {
             "message": message,
             "history": history,
@@ -147,6 +167,12 @@ class Orchestrator:
             history = history[-MAX_HISTORY:]
 
         self._history[session_id] = history
+
+        # Persist to session store (async, best-effort)
+        try:
+            await self.session_store.set_history(session_id, history)
+        except Exception:
+            pass
 
         return {
             "message": agent_response.get("message", ""),

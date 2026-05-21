@@ -18,6 +18,12 @@ XSS_PATTERNS = [
     r"on\w+\s*=",
 ]
 
+# Tools that require explicit user confirmation before execution
+DESTRUCTIVE_TOOLS = {
+    "delete_record",
+    "restore_backup",
+}
+
 
 def sanitize_input(text: str) -> str:
     """Remove potentially dangerous characters from user input."""

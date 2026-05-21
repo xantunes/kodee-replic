@@ -57,7 +57,11 @@ class GeneralAgent(BaseAgent):
         mcp_tools = await self.mcp_client.list_tools()
         self.tools = local_tools + mcp_tools
 
-        response = await self.llm_service.chat_with_tools(messages, self.tools)
+        response = await self.llm_service.chat_with_tools_react(
+            messages, self.tools,
+            execute_local_tool=self.tool_registry.execute_tool,
+            execute_mcp_tool=self.mcp_client.call_tool,
+        )
         return {"message": str(response.content), "agent": self.name}
 
 
@@ -119,7 +123,11 @@ class DNSAgent(BaseAgent):
             if t.get("function", {}).get("name", "") in self.DNS_TOOL_NAMES
         ]
 
-        response = await self.llm_service.chat_with_tools(messages, self.tools)
+        response = await self.llm_service.chat_with_tools_react(
+            messages, self.tools,
+            execute_local_tool=self.tool_registry.execute_tool,
+            execute_mcp_tool=self.mcp_client.call_tool,
+        )
         return {"message": str(response.content), "agent": self.name}
 
 
@@ -181,7 +189,11 @@ class BackupAgent(BaseAgent):
             if t.get("function", {}).get("name", "") in self.BACKUP_TOOL_NAMES
         ]
 
-        response = await self.llm_service.chat_with_tools(messages, self.tools)
+        response = await self.llm_service.chat_with_tools_react(
+            messages, self.tools,
+            execute_local_tool=self.tool_registry.execute_tool,
+            execute_mcp_tool=self.mcp_client.call_tool,
+        )
         return {"message": str(response.content), "agent": self.name}
 
 
@@ -242,5 +254,9 @@ class MonitoringAgent(BaseAgent):
             if t.get("function", {}).get("name", "") in self.MONITORING_TOOL_NAMES
         ]
 
-        response = await self.llm_service.chat_with_tools(messages, self.tools)
+        response = await self.llm_service.chat_with_tools_react(
+            messages, self.tools,
+            execute_local_tool=self.tool_registry.execute_tool,
+            execute_mcp_tool=self.mcp_client.call_tool,
+        )
         return {"message": str(response.content), "agent": self.name}

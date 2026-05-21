@@ -109,7 +109,7 @@ class TestSpecializedAgents:
     async def test_general_agent_run(self) -> None:
         """Test GeneralAgent run method."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
+        mock_llm_service.chat_with_tools_react = AsyncMock(
             return_value=AIMessage(content="General response")
         )
 
@@ -131,7 +131,7 @@ class TestSpecializedAgents:
     async def test_dns_agent_run(self) -> None:
         """Test DNSAgent run method."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
+        mock_llm_service.chat_with_tools_react = AsyncMock(
             return_value=AIMessage(content="DNS response")
         )
 
@@ -153,7 +153,7 @@ class TestSpecializedAgents:
     async def test_backup_agent_run(self) -> None:
         """Test BackupAgent run method."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
+        mock_llm_service.chat_with_tools_react = AsyncMock(
             return_value=AIMessage(content="Backup response")
         )
 
@@ -175,7 +175,7 @@ class TestSpecializedAgents:
     async def test_monitoring_agent_run(self) -> None:
         """Test MonitoringAgent run method."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
+        mock_llm_service.chat_with_tools_react = AsyncMock(
             return_value=AIMessage(content="Monitoring response")
         )
 
@@ -197,7 +197,7 @@ class TestSpecializedAgents:
     async def test_dns_agent_filters_tools(self) -> None:
         """Test DNSAgent filters to DNS-relevant tools."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
+        mock_llm_service.chat_with_tools_react = AsyncMock(
             return_value=AIMessage(content="DNS response")
         )
 
@@ -233,7 +233,7 @@ class TestSpecializedAgents:
     async def test_backup_agent_filters_tools(self) -> None:
         """Test BackupAgent filters to backup-relevant tools."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
+        mock_llm_service.chat_with_tools_react = AsyncMock(
             return_value=AIMessage(content="Backup response")
         )
 
@@ -267,7 +267,7 @@ class TestSpecializedAgents:
     async def test_monitoring_agent_filters_tools(self) -> None:
         """Test MonitoringAgent filters to monitoring-relevant tools."""
         mock_llm_service = MagicMock()
-        mock_llm_service.chat_with_tools = AsyncMock(
+        mock_llm_service.chat_with_tools_react = AsyncMock(
             return_value=AIMessage(content="Monitoring response")
         )
 

@@ -15,6 +15,7 @@ from app.utils.monitoring import (
     init_sentry,
     init_tracing,
 )
+from app.utils.rate_limit import add_rate_limit_middleware
 from app.services.chat_service import ChatService
 
 logger = get_logger("app.main")
@@ -41,6 +42,9 @@ app = FastAPI(
 
 # Monitoring middleware
 add_request_middleware(app)
+
+# Rate limiting middleware
+add_rate_limit_middleware(app)
 
 # CORS middleware
 app.add_middleware(
