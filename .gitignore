@@ -43,3 +43,9 @@ uv.lock
 
 # Alembic versions (keep directory, ignore generated migration files until committed)
 # alembic/versions/*.py
+*.log
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+MCP Fortgiate/
