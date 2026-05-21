@@ -27,19 +27,24 @@ The system is organized into **5 layers**:
 
 1. **Presentation** — Users interact via HTTP (`/chat`) or WebSocket (`/ws/{user_id}`).
 2. **API** — FastAPI handles routing, validation, CORS, and monitoring middleware.
-3. **Orchestration** — `AgentRouter` classifies intent and delegates to specialized agents (`GeneralAgent`, `CodeAgent`, `DataAgent`, `ResearchAgent`, `CreativeAgent`, `ImageAgent`).
+3. **Orchestration** — `AgentRouter` classifies intent and delegates to specialized agents (`GeneralAgent`, `DNSAgent`, `BackupAgent`, `MonitoringAgent`).
 4. **MCP** — Model Context Protocol server exposes tools (`read_file`, `write_file`, `calculate`, `search_web`, `get_weather`, etc.) consumed by agents.
 5. **Data** — PostgreSQL for relational data, Redis for caching/sessions, Qdrant for vector search and RAG document retrieval.
 
 ## Features
 
-- **Multi-Agent Routing** — Intent-based classification routes queries to the most appropriate specialized agent.
+- **Multi-Agent Routing** — Intent-based classification routes queries to the most appropriate specialized agent (DNS, Backup, Monitoring, General).
 - **RAG Pipeline** — Document ingestion, OpenAI embeddings, and Qdrant vector search for context-augmented responses.
-- **MCP Tool Integration** — Extensible tool registry with local and remote tool execution.
+- **MCP Tool Integration** — Extensible tool registry with local and remote tool execution via ReAct loop (max 5 iterations).
+- **Destructive Action Confirmation** — User confirmation required before executing destructive operations (e.g., `delete_record`, `restore_backup`).
+- **Input Sanitization** — Security validation for SQL injection and XSS patterns on all chat inputs.
+- **Rate Limiting** — Sliding-window rate limiter middleware with configurable RPS.
 - **WebSocket Real-Time Chat** — Stateful bi-directional communication with session tracking.
-- **Structured Observability** — JSON logging, Sentry error tracking, and a `/metrics` endpoint.
-- **Docker-First Deployment** — Complete `docker-compose.yml` with Postgres, Redis, and Qdrant.
+- **Structured Observability** — JSON logging, Sentry error tracking, OpenTelemetry tracing, Grafana dashboard, and a `/metrics` endpoint.
+- **Docker-First Deployment** — Complete `docker-compose.yml` with Postgres, Redis, Qdrant, Jaeger, and Grafana.
 - **Async-First** — Built on Python `async`/`await` and FastAPI for high concurrency.
+- **Azure OpenAI Support** — Auto-detects Azure OpenAI via `AZURE_OPENAI_ENDPOINT` env var.
+- **Per-Agent Model Routing** — Different models for router (mini) vs. domain agents (full).
 
 ## Quick Start
 
@@ -144,6 +149,7 @@ curl http://localhost:8000/metrics
 | `QDRANT_URL` | ✅ | — | Qdrant server URL. |
 | `QDRANT_COLLECTION` | ❌ | `kodee_knowledge` | Qdrant collection name. |
 | `SENTRY_DSN` | ❌ | — | Sentry DSN for error tracking. |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | ❌ | `http://jaeger:4317` | OpenTelemetry OTLP endpoint for tracing. |
 | `APP_ENV` | ❌ | `development` | Runtime environment. |
 | `LOG_LEVEL` | ❌ | `INFO` | Logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). |
 | `RATE_LIMIT_RPS` | ❌ | `10` | Rate limit in requests per second. |
@@ -156,13 +162,12 @@ You can override which model each agent uses via environment variables:
 |----------|---------|----------------|
 | `MODEL_ROUTER` | `gpt-4.1-mini` | Fast intent classification |
 | `MODEL_GENERAL` | `gpt-4.1-mini` | Chitchat, simple questions |
-| `MODEL_CREATIVE` | `gpt-4.1-mini` | Creative writing, brainstorming |
-| `MODEL_IMAGE` | `gpt-4.1-mini` | Image prompt generation |
-| `MODEL_CODE` | `gpt-4.1` | Programming, debugging, architecture |
-| `MODEL_RESEARCH` | `gpt-4.1` | Factual research, data analysis |
-| `MODEL_DATA` | `gpt-4.1` | CSV/JSON analysis, statistics |
+| `MODEL_DNS` | `gpt-4.1` | DNS management tasks |
+| `MODEL_BACKUP` | `gpt-4.1` | Backup and restore operations |
+| `MODEL_MONITORING` | `gpt-4.1` | Infrastructure monitoring |
+| `MODEL_HANDOFF` | `gpt-4.1-mini` | Human escalation detection |
 
-**Strategy:** Use `gpt-4.1-mini` for ~70% of traffic (general, creative, router) and `gpt-4.1` for the ~30% that needs deep reasoning (code, research, data).
+**Strategy:** Use `gpt-4.1-mini` for ~70% of traffic (router, general, handoff) and `gpt-4.1` for the ~30% that needs deep reasoning (DNS, backup, monitoring).
 
 ## Project Structure
 
@@ -172,15 +177,20 @@ You can override which model each agent uses via environment variables:
 │   ├── __init__.py              # Package version info
 │   ├── main.py                  # FastAPI application, lifespan, routes
 │   ├── config.py                # Pydantic Settings
-│   ├── monitoring.py            # Logging, Sentry, request middleware
+│   ├── utils/
+│   │   ├── monitoring.py        # Logging, Sentry, OpenTelemetry, request middleware
+│   │   ├── security.py          # Input validation and sanitization
+│   │   ├── rate_limit.py        # Rate limiting middleware
+│   │   └── session_store.py     # In-memory and Redis session storage
 │   ├── agents/
-│   │   ├── base.py              # BaseAgent abstract class
+│   │   ├── base_agent.py        # BaseAgent abstract class
+│   │   ├── domain_agent.py      # SDD-compliant agent exports
 │   │   ├── router.py            # Intent-based AgentRouter
 │   │   ├── orchestrator.py      # Multi-turn conversation orchestrator
-│   │   ├── specialized.py       # Concrete agent implementations
-│   │   └── data_tools.py        # CSV parsing & summarization helpers
+│   │   └── specialized.py       # Concrete agent implementations (DNS, Backup, Monitoring, General)
 │   ├── llm/
-│   │   ├── llm_service.py       # LLM wrapper (LangChain + OpenAI)
+│   │   ├── model_resolver.py    # Per-agent model routing
+│   │   └── tool_registry.py     # Local tool registry
 │   │   ├── prompts.py           # System prompts & message builders
 │   │   └── tool_registry.py     # Local tool registry
 │   ├── mcp/
@@ -195,7 +205,8 @@ You can override which model each agent uses via environment variables:
 │   │   ├── ingest.py            # Document chunking & ingestion
 │   │   └── retriever.py         # RAG retrieval & prompt augmentation
 │   └── services/
-│       └── chat_service.py      # Business logic & orchestrator wiring
+│       ├── chat_service.py      # Business logic & orchestrator wiring
+│       └── llm_service.py       # LLM wrapper (LangChain + OpenAI / Azure)
 ├── tests/
 │   ├── conftest.py              # Shared pytest fixtures
 │   ├── test_agents.py           # Agent routing & orchestration tests
