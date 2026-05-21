@@ -21,7 +21,7 @@ class TestEmbeddingService:
         mock_embeddings.aembed_query = AsyncMock(return_value=[0.1, 0.2, 0.3])
 
         with patch(
-            "app.rag.embeddings.OpenAIEmbeddings", return_value=mock_embeddings
+            "app.rag.embeddings._create_embeddings", return_value=mock_embeddings
         ):
             service = EmbeddingService()
             result = await service.embed_text("hello world")
@@ -39,7 +39,7 @@ class TestEmbeddingService:
         )
 
         with patch(
-            "app.rag.embeddings.OpenAIEmbeddings", return_value=mock_embeddings
+            "app.rag.embeddings._create_embeddings", return_value=mock_embeddings
         ):
             service = EmbeddingService()
             result = await service.embed_texts(["text1", "text2"])
@@ -56,7 +56,7 @@ class TestEmbeddingService:
         mock_embeddings.aembed_query = AsyncMock(side_effect=RuntimeError("API down"))
 
         with patch(
-            "app.rag.embeddings.OpenAIEmbeddings", return_value=mock_embeddings
+            "app.rag.embeddings._create_embeddings", return_value=mock_embeddings
         ):
             service = EmbeddingService()
             with pytest.raises(RuntimeError, match="API down"):

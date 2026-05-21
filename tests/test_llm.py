@@ -96,11 +96,10 @@ class TestLLMService:
     @pytest.mark.asyncio
     async def test_chat_returns_string(self) -> None:
         """Test that chat returns a string response."""
-        with patch("app.llm.llm_service.ChatOpenAI") as mock_chat_openai:
-            mock_llm = MagicMock()
-            mock_llm.ainvoke = AsyncMock(return_value=AIMessage(content="Hello!"))
-            mock_chat_openai.return_value = mock_llm
+        mock_llm = MagicMock()
+        mock_llm.ainvoke = AsyncMock(return_value=AIMessage(content="Hello!"))
 
+        with patch("app.llm.llm_service._create_llm", return_value=mock_llm):
             service = LLMService()
             messages = [SystemMessage(content="System"), HumanMessage(content="Hi")]
             result = await service.chat(messages)
@@ -110,11 +109,10 @@ class TestLLMService:
     @pytest.mark.asyncio
     async def test_chat_handles_api_error(self) -> None:
         """Test that chat handles API errors gracefully."""
-        with patch("app.llm.llm_service.ChatOpenAI") as mock_chat_openai:
-            mock_llm = MagicMock()
-            mock_llm.ainvoke = AsyncMock(side_effect=Exception("API Error"))
-            mock_chat_openai.return_value = mock_llm
+        mock_llm = MagicMock()
+        mock_llm.ainvoke = AsyncMock(side_effect=Exception("API Error"))
 
+        with patch("app.llm.llm_service._create_llm", return_value=mock_llm):
             service = LLMService()
             messages = [HumanMessage(content="Hi")]
             result = await service.chat(messages)
@@ -123,12 +121,11 @@ class TestLLMService:
     @pytest.mark.asyncio
     async def test_chat_with_tools_returns_aimessage(self) -> None:
         """Test that chat_with_tools returns an AIMessage."""
-        with patch("app.llm.llm_service.ChatOpenAI") as mock_chat_openai:
-            mock_llm = MagicMock()
-            mock_llm.bind_tools = MagicMock(return_value=mock_llm)
-            mock_llm.ainvoke = AsyncMock(return_value=AIMessage(content="Response"))
-            mock_chat_openai.return_value = mock_llm
+        mock_llm = MagicMock()
+        mock_llm.bind_tools = MagicMock(return_value=mock_llm)
+        mock_llm.ainvoke = AsyncMock(return_value=AIMessage(content="Response"))
 
+        with patch("app.llm.llm_service._create_llm", return_value=mock_llm):
             service = LLMService()
             messages = [HumanMessage(content="Hi")]
             tools: List[Dict[str, Any]] = []

@@ -9,9 +9,17 @@ class Settings(BaseSettings):
     )
 
     # LLM Configuration
-    OPENAI_API_KEY: str
+    # OpenAI (direct) or Azure OpenAI
+    OPENAI_API_KEY: str = ""
     OPENAI_MODEL: str = "gpt-4o"
     OPENAI_TEMPERATURE: float = 0.2
+
+    # Azure OpenAI (takes precedence if AZURE_OPENAI_ENDPOINT is set)
+    AZURE_OPENAI_ENDPOINT: str = ""
+    AZURE_OPENAI_API_KEY: str = ""
+    AZURE_OPENAI_API_VERSION: str = "2024-12-01-preview"
+    AZURE_OPENAI_DEPLOYMENT: str = ""  # e.g. "gpt-4.1"
+    AZURE_OPENAI_EMBEDDING_DEPLOYMENT: str = "text-embedding-3-small"
 
     # Database
     DATABASE_URL: str

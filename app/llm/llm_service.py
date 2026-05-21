@@ -1,11 +1,37 @@
-"""LLM service for interacting with OpenAI via LangChain."""
+"""LLM service for interacting with OpenAI or Azure OpenAI via LangChain."""
 
 from typing import Any, Dict, List
 
 from langchain_core.messages import AIMessage, BaseMessage
-from langchain_openai import ChatOpenAI
 
 from app.config import settings
+
+
+def _create_llm() -> Any:
+    """Create the appropriate LLM client based on configuration.
+
+    Returns:
+        ChatOpenAI or AzureChatOpenAI instance.
+    """
+    if settings.AZURE_OPENAI_ENDPOINT:
+        from langchain_openai import AzureChatOpenAI
+
+        deployment = settings.AZURE_OPENAI_DEPLOYMENT or settings.OPENAI_MODEL
+        return AzureChatOpenAI(
+            azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
+            api_key=settings.AZURE_OPENAI_API_KEY,
+            api_version=settings.AZURE_OPENAI_API_VERSION,
+            azure_deployment=deployment,
+            temperature=settings.OPENAI_TEMPERATURE,
+        )
+
+    from langchain_openai import ChatOpenAI
+
+    return ChatOpenAI(
+        model=settings.OPENAI_MODEL,
+        temperature=settings.OPENAI_TEMPERATURE,
+        api_key=settings.OPENAI_API_KEY,
+    )
 
 
 class LLMService:
@@ -13,11 +39,7 @@ class LLMService:
 
     def __init__(self) -> None:
         """Initialize the LLM client."""
-        self.llm = ChatOpenAI(
-            model=settings.OPENAI_MODEL,
-            temperature=settings.OPENAI_TEMPERATURE,
-            api_key=settings.OPENAI_API_KEY,
-        )
+        self.llm = _create_llm()
 
     async def chat(self, messages: List[BaseMessage]) -> str:
         """Send messages to the LLM and return the response content.

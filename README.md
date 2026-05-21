@@ -47,7 +47,7 @@ The system is organized into **5 layers**:
 
 - Python 3.11+
 - Docker & Docker Compose
-- OpenAI API key
+- OpenAI API key **or** Azure OpenAI credentials
 
 ### 1. Clone and configure
 
@@ -129,9 +129,16 @@ curl http://localhost:8000/metrics
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `OPENAI_API_KEY` | ✅ | — | OpenAI API key for LLM and embeddings. |
+| `OPENAI_API_KEY` | ✅* | — | OpenAI API key for LLM and embeddings. |
 | `OPENAI_MODEL` | ❌ | `gpt-4o` | OpenAI model name. |
 | `OPENAI_TEMPERATURE` | ❌ | `0.2` | Sampling temperature. |
+| `AZURE_OPENAI_ENDPOINT` | ✅* | — | Azure OpenAI endpoint URL. |
+| `AZURE_OPENAI_API_KEY` | ✅* | — | Azure OpenAI API key. |
+| `AZURE_OPENAI_API_VERSION` | ❌ | `2024-12-01-preview` | Azure API version. |
+| `AZURE_OPENAI_DEPLOYMENT` | ❌ | — | Azure deployment name (e.g. `gpt-4.1`). |
+| `AZURE_OPENAI_EMBEDDING_DEPLOYMENT` | ❌ | `text-embedding-3-small` | Azure embedding deployment. |
+
+\* Provide either `OPENAI_API_KEY` (OpenAI direct) or `AZURE_OPENAI_ENDPOINT` + `AZURE_OPENAI_API_KEY` (Azure). Azure takes precedence if `AZURE_OPENAI_ENDPOINT` is set.
 | `DATABASE_URL` | ✅ | — | PostgreSQL connection string. |
 | `REDIS_URL` | ✅ | — | Redis connection string. |
 | `QDRANT_URL` | ✅ | — | Qdrant server URL. |

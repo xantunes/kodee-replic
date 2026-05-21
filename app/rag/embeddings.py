@@ -1,17 +1,43 @@
-"""Embedding service using OpenAI via LangChain."""
+"""Embedding service using OpenAI or Azure OpenAI via LangChain."""
 
 import logging
-from typing import List
-
-from langchain_openai import OpenAIEmbeddings
+from typing import Any, List
 
 from app.config import settings
 
 logger = logging.getLogger(__name__)
 
 
+def _create_embeddings(model: str) -> Any:
+    """Create the appropriate embeddings client based on configuration.
+
+    Args:
+        model: Embedding model name.
+
+    Returns:
+        OpenAIEmbeddings or AzureOpenAIEmbeddings instance.
+    """
+    if settings.AZURE_OPENAI_ENDPOINT:
+        from langchain_openai import AzureOpenAIEmbeddings
+
+        deployment = settings.AZURE_OPENAI_EMBEDDING_DEPLOYMENT or model
+        return AzureOpenAIEmbeddings(
+            azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
+            api_key=settings.AZURE_OPENAI_API_KEY,
+            api_version=settings.AZURE_OPENAI_API_VERSION,
+            azure_deployment=deployment,
+        )
+
+    from langchain_openai import OpenAIEmbeddings
+
+    return OpenAIEmbeddings(
+        model=model,
+        api_key=settings.OPENAI_API_KEY,
+    )
+
+
 class EmbeddingService:
-    """Service for generating text embeddings using OpenAI."""
+    """Service for generating text embeddings using OpenAI or Azure OpenAI."""
 
     def __init__(self, model: str = "text-embedding-3-small") -> None:
         """Initialize the embedding client.
@@ -20,10 +46,7 @@ class EmbeddingService:
             model: OpenAI embedding model to use.
         """
         self.model = model
-        self._embeddings = OpenAIEmbeddings(
-            model=model,
-            api_key=settings.OPENAI_API_KEY,
-        )
+        self._embeddings = _create_embeddings(model)
 
     async def embed_text(self, text: str) -> List[float]:
         """Embed a single text string.
