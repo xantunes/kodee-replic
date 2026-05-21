@@ -5,7 +5,6 @@ sessions are fully wired, it can be updated to persist ToolExecution records.
 """
 
 import logging
-import time
 from typing import Any, Dict, Optional
 
 from app.models.database import ToolExecution

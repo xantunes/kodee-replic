@@ -2,7 +2,6 @@
 
 from unittest.mock import AsyncMock, patch
 
-import pytest
 from starlette.testclient import TestClient
 
 from app.main import app as fastapi_app

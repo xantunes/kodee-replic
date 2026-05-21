@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from app.rag.embeddings import EmbeddingService
-from app.rag.ingest import DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, DocumentIngestor
+from app.rag.ingest import DocumentIngestor
 from app.rag.retriever import RAGRetriever
 from app.rag.vector_store import QdrantVectorStore
 

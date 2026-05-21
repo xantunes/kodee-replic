@@ -1,7 +1,7 @@
 """Chat service for processing messages."""
 
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from app.agents.orchestrator import Orchestrator
 from app.config import settings

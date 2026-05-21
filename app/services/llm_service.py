@@ -114,7 +114,6 @@ class LLMService:
         Returns:
             Final AIMessage after all tool calls are resolved.
         """
-        import asyncio
         import inspect
 
         async def _exec(executor: Optional[ToolExecutor], name: str, args: Dict[str, Any]) -> str:

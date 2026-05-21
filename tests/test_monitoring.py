@@ -4,10 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from httpx import AsyncClient
-from starlette.testclient import TestClient
 
-from app.main import app as fastapi_app
-from app.services.chat_service import ChatService
 from app.utils.monitoring import init_tracing
 
 
