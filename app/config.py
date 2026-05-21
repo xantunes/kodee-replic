@@ -40,6 +40,7 @@ class Settings(BaseSettings):
 
     # Monitoring
     SENTRY_DSN: str = ""
+    OTEL_EXPORTER_OTLP_ENDPOINT: str = ""
 
     # App Settings
     APP_ENV: str = "development"

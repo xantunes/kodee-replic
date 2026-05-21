@@ -79,8 +79,9 @@ def init_tracing() -> None:
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 
+    endpoint = settings.OTEL_EXPORTER_OTLP_ENDPOINT or "http://jaeger:4317"
     provider = TracerProvider()
-    otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317", insecure=True)
+    otlp_exporter = OTLPSpanExporter(endpoint=endpoint, insecure=True)
     provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
     trace.set_tracer_provider(provider)
 

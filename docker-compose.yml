@@ -59,26 +59,47 @@ services:
       - kodee_network
     restart: unless-stopped
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: kodee_jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    networks:
+      - kodee_network
+    restart: unless-stopped
+
   grafana:
     image: grafana/grafana:latest
     container_name: kodee_grafana
     ports:
       - "3000:3000"
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_INSTALL_PLUGINS: grafana-clock-panel
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - app
+      - jaeger
     networks:
       - kodee_network
     restart: unless-stopped
+    secrets:
+      - grafana_admin_password
 
 volumes:
   postgres_data:
   redis_data:
   qdrant_data:
   grafana_data:
+
+secrets:
+  grafana_admin_password:
+    file: ./docker/grafana/admin_password.txt
 
 networks:
   kodee_network:
