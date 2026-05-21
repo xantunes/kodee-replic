@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 
 from app.main import app as fastapi_app
 from app.services.chat_service import ChatService
+from app.utils.monitoring import init_tracing
 
 
 class TestMetricsEndpoint:
@@ -67,7 +68,7 @@ class TestRequestLoggingMiddleware:
         """Test that the middleware logs request details via the logger."""
         mock_logger = MagicMock()
 
-        with patch("app.monitoring.get_logger", return_value=mock_logger):
+        with patch("app.utils.monitoring.get_logger", return_value=mock_logger):
             response = await client.get("/health")
 
         assert response.status_code == 200
@@ -77,3 +78,11 @@ class TestRequestLoggingMiddleware:
         # The first positional argument is the log message template
         log_msg = call_args[0][0] if call_args[0] else ""
         assert "method" in log_msg or "path" in log_msg
+
+
+class TestTracing:
+    """Tests for OpenTelemetry tracing initialization."""
+
+    def test_init_tracing_runs_without_error(self) -> None:
+        """Test that init_tracing() can be called without raising an exception."""
+        init_tracing()

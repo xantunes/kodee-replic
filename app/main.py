@@ -7,12 +7,13 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.models.chat import ChatRequest, ChatResponse
-import app.monitoring as monitoring
+import app.utils.monitoring as monitoring
 from app.monitoring import (
     add_request_middleware,
     get_logger,
     init_logging,
     init_sentry,
+    init_tracing,
 )
 from app.services.chat_service import ChatService
 
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
     # Startup
     init_logging()
     init_sentry()
+    init_tracing()
     logger.info("Application startup complete")
     yield
     # Shutdown

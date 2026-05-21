@@ -59,10 +59,26 @@ services:
       - kodee_network
     restart: unless-stopped
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: kodee_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - app
+    networks:
+      - kodee_network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
   qdrant_data:
+  grafana_data:
 
 networks:
   kodee_network:
