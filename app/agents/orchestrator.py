@@ -11,9 +11,11 @@ from app.agents.handoff import HandoffClassifier
 from app.agents.router import AgentRouter
 from app.agents.specialized import BackupAgent, DNSAgent, GeneralAgent, MonitoringAgent
 from app.rag.retriever import RAGRetriever
+from app.services.llm_service import LLMService
 from app.utils.session_store import InMemorySessionStore, SessionStore
 
 MAX_HISTORY = 10
+SUMMARIZE_THRESHOLD = 8  # start summarizing when history exceeds this
 
 
 class OrchestratorState(TypedDict):
@@ -38,6 +40,7 @@ class Orchestrator:
         monitoring_agent: BaseAgent | None = None,
         retriever: RAGRetriever | None = None,
         session_store: SessionStore | None = None,
+        llm_service: LLMService | None = None,
     ) -> None:
         """Initialize the orchestrator with agents and a router.
 
@@ -50,6 +53,7 @@ class Orchestrator:
             monitoring_agent: Agent for monitoring tasks.
             retriever: RAG retriever for knowledge base augmentation.
             session_store: Optional persistent session store (e.g., Redis).
+            llm_service: LLM service for context summarization.
         """
         self.router = router or AgentRouter()
         self.handoff_classifier = handoff_classifier or HandoffClassifier()
@@ -61,6 +65,7 @@ class Orchestrator:
         }
         self.retriever = retriever or RAGRetriever()
         self.session_store = session_store or InMemorySessionStore()
+        self.llm_service = llm_service
         self._history: Dict[str, List[BaseMessage]] = {}
         self._agent_usage: Dict[str, List[str]] = {}
         self._graph = self._build_graph()
@@ -162,9 +167,17 @@ class Orchestrator:
         history.append(HumanMessage(content=message))
         history.append(AIMessage(content=agent_response.get("message", "")))
 
-        # Keep only the last N messages
-        if len(history) > MAX_HISTORY:
-            history = history[-MAX_HISTORY:]
+        # Intelligent context management: summarize old turns instead of truncating
+        if len(history) > SUMMARIZE_THRESHOLD:
+            # Keep the last 4 messages, summarize everything before that
+            to_summarize = history[:-4]
+            recent = history[-4:]
+            summary = await self._summarize_history(to_summarize)
+            from langchain_core.messages import SystemMessage
+
+            history = [
+                SystemMessage(content=f"Previous conversation summary: {summary}")
+            ] + recent
 
         self._history[session_id] = history
 
@@ -180,6 +193,38 @@ class Orchestrator:
             "actions": agent_response.get("actions", []),
             "session_id": session_id,
         }
+
+    async def _summarize_history(self, messages: List[BaseMessage]) -> str:
+        """Generate a concise summary of old conversation turns.
+
+        Args:
+            messages: List of messages to summarize.
+
+        Returns:
+            A summary string of the conversation so far.
+        """
+        if not self.llm_service:
+            # Fallback: join message contents if no LLM available
+            return " ".join(
+                f"{m.__class__.__name__}: {m.content}"
+                for m in messages[:4]
+            )
+
+        from langchain_core.messages import SystemMessage
+
+        summary_prompt = (
+            "Summarize the following conversation in 1-2 sentences. "
+            "Preserve key facts, decisions, and user intent.\n\n"
+        )
+        for m in messages:
+            role = "User" if isinstance(m, HumanMessage) else "Assistant"
+            summary_prompt += f"{role}: {m.content}\n"
+
+        try:
+            summary = await self.llm_service.chat([SystemMessage(content=summary_prompt)])
+            return summary
+        except Exception:
+            return "[Previous conversation summary unavailable]"
 
     def get_history(self, session_id: str) -> List[BaseMessage]:
         """Retrieve the conversation history for a session.

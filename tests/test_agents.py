@@ -435,7 +435,9 @@ class TestOrchestrator:
 
     @pytest.mark.asyncio
     async def test_orchestrator_history_limit(self) -> None:
-        """Test that orchestrator keeps only the last N messages."""
+        """Test that orchestrator summarizes old turns instead of truncating."""
+        from langchain_core.messages import SystemMessage
+
         mock_router = MagicMock()
         mock_router.route = AsyncMock(return_value="general")
 
@@ -464,11 +466,13 @@ class TestOrchestrator:
             )
 
         history = orchestrator.get_history("session-1")
-        assert len(history) == MAX_HISTORY
-        # Each turn adds 2 messages. With MAX_HISTORY + 2 turns (24 messages),
-        # the last MAX_HISTORY (10) are kept. First 14 messages (7 turns) dropped.
-        assert history[0].content == "Message 7"
-        assert history[-1].content == f"Response {MAX_HISTORY + 1}"
+        # With summarization, history should contain a SystemMessage summary
+        # plus recent messages, never growing unbounded.
+        assert len(history) <= MAX_HISTORY
+        assert isinstance(history[0], SystemMessage)
+        assert "summary" in history[0].content.lower() or "Previous conversation" in history[0].content
+        # The most recent user message should be preserved
+        assert history[-2].content == f"Message {MAX_HISTORY + 1}"
 
     @pytest.mark.asyncio
     async def test_orchestrator_tracks_agent_usage(self) -> None:
