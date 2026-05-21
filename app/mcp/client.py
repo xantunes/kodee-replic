@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List
 
-from app.mcp.server import mcp
+from app.mcp.tools import mcp
 
 
 class MCPClient:
