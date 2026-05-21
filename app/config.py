@@ -21,6 +21,16 @@ class Settings(BaseSettings):
     AZURE_OPENAI_DEPLOYMENT: str = ""  # e.g. "gpt-4.1"
     AZURE_OPENAI_EMBEDDING_DEPLOYMENT: str = "text-embedding-3-small"
 
+    # Per-agent model overrides (default = OPENAI_MODEL or AZURE_OPENAI_DEPLOYMENT)
+    # Use "mini" agents for fast/cheap tasks, "full" for complex reasoning
+    MODEL_ROUTER: str = ""       # default: mini (fast classification)
+    MODEL_GENERAL: str = ""      # default: mini (chitchat)
+    MODEL_CREATIVE: str = ""     # default: mini (creative writing)
+    MODEL_IMAGE: str = ""        # default: mini (image prompts)
+    MODEL_CODE: str = ""         # default: full (programming)
+    MODEL_RESEARCH: str = ""     # default: full (fact analysis)
+    MODEL_DATA: str = ""         # default: full (data analysis)
+
     # Database
     DATABASE_URL: str
     REDIS_URL: str

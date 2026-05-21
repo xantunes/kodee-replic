@@ -148,6 +148,22 @@ curl http://localhost:8000/metrics
 | `LOG_LEVEL` | ❌ | `INFO` | Logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`). |
 | `RATE_LIMIT_RPS` | ❌ | `10` | Rate limit in requests per second. |
 
+### Model Assignment by Agent
+
+You can override which model each agent uses via environment variables:
+
+| Variable | Default | Recommended For |
+|----------|---------|----------------|
+| `MODEL_ROUTER` | `gpt-4.1-mini` | Fast intent classification |
+| `MODEL_GENERAL` | `gpt-4.1-mini` | Chitchat, simple questions |
+| `MODEL_CREATIVE` | `gpt-4.1-mini` | Creative writing, brainstorming |
+| `MODEL_IMAGE` | `gpt-4.1-mini` | Image prompt generation |
+| `MODEL_CODE` | `gpt-4.1` | Programming, debugging, architecture |
+| `MODEL_RESEARCH` | `gpt-4.1` | Factual research, data analysis |
+| `MODEL_DATA` | `gpt-4.1` | CSV/JSON analysis, statistics |
+
+**Strategy:** Use `gpt-4.1-mini` for ~70% of traffic (general, creative, router) and `gpt-4.1` for the ~30% that needs deep reasoning (code, research, data).
+
 ## Project Structure
 
 ```

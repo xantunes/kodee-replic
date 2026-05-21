@@ -7,8 +7,12 @@ from langchain_core.messages import AIMessage, BaseMessage
 from app.config import settings
 
 
-def _create_llm() -> Any:
+def _create_llm(model_override: str = "") -> Any:
     """Create the appropriate LLM client based on configuration.
+
+    Args:
+        model_override: Specific model/deployment to use. Falls back to
+            settings.OPENAI_MODEL or settings.AZURE_OPENAI_DEPLOYMENT.
 
     Returns:
         ChatOpenAI or AzureChatOpenAI instance.
@@ -16,7 +20,7 @@ def _create_llm() -> Any:
     if settings.AZURE_OPENAI_ENDPOINT:
         from langchain_openai import AzureChatOpenAI
 
-        deployment = settings.AZURE_OPENAI_DEPLOYMENT or settings.OPENAI_MODEL
+        deployment = model_override or settings.AZURE_OPENAI_DEPLOYMENT or settings.OPENAI_MODEL
         return AzureChatOpenAI(
             azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
             api_key=settings.AZURE_OPENAI_API_KEY,
@@ -27,8 +31,9 @@ def _create_llm() -> Any:
 
     from langchain_openai import ChatOpenAI
 
+    model = model_override or settings.OPENAI_MODEL
     return ChatOpenAI(
-        model=settings.OPENAI_MODEL,
+        model=model,
         temperature=settings.OPENAI_TEMPERATURE,
         api_key=settings.OPENAI_API_KEY,
     )
@@ -37,9 +42,13 @@ def _create_llm() -> Any:
 class LLMService:
     """Service for interacting with the LLM."""
 
-    def __init__(self) -> None:
-        """Initialize the LLM client."""
-        self.llm = _create_llm()
+    def __init__(self, model: str = "") -> None:
+        """Initialize the LLM client.
+
+        Args:
+            model: Optional model override (e.g. 'gpt-4.1-mini').
+        """
+        self.llm = _create_llm(model_override=model)
 
     async def chat(self, messages: List[BaseMessage]) -> str:
         """Send messages to the LLM and return the response content.

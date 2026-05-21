@@ -5,6 +5,7 @@ from typing import List
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 from app.llm.llm_service import LLMService
+from app.llm.model_resolver import resolve_model
 
 ROUTING_PROMPT = (
     "Given the user message, classify into one of: "
@@ -29,7 +30,7 @@ class AgentRouter:
         Args:
             llm_service: Optional LLMService instance for classification.
         """
-        self.llm_service = llm_service or LLMService()
+        self.llm_service = llm_service or LLMService(model=resolve_model("router"))
 
     async def route(self, message: str, history: List[BaseMessage]) -> str:
         """Classify the user message and return the agent name.

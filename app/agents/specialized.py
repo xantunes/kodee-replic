@@ -7,6 +7,7 @@ from langchain_core.messages import BaseMessage
 from app.agents.base import BaseAgent
 from app.agents.data_tools import parse_csv, summarize_data
 from app.llm.llm_service import LLMService
+from app.llm.model_resolver import resolve_model
 from app.llm.prompts import build_messages
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
@@ -36,7 +37,7 @@ class GeneralAgent(BaseAgent):
             tool_registry: Local tool registry.
             mcp_client: MCP client for external tools.
         """
-        self.llm_service = llm_service or LLMService()
+        self.llm_service = llm_service or LLMService(model=resolve_model("general"))
         self.tool_registry = tool_registry or ToolRegistry()
         self.mcp_client = mcp_client or MCPClient()
         self.tools: List[Dict[str, Any]] = []
@@ -88,7 +89,7 @@ class CodeAgent(BaseAgent):
             tool_registry: Local tool registry.
             mcp_client: MCP client for external tools.
         """
-        self.llm_service = llm_service or LLMService()
+        self.llm_service = llm_service or LLMService(model=resolve_model("code"))
         self.tool_registry = tool_registry or ToolRegistry()
         self.mcp_client = mcp_client or MCPClient()
         self.tools: List[Dict[str, Any]] = []
@@ -148,7 +149,7 @@ class ResearchAgent(BaseAgent):
             mcp_client: MCP client for external tools.
             rag_retriever: RAG retriever for document lookup.
         """
-        self.llm_service = llm_service or LLMService()
+        self.llm_service = llm_service or LLMService(model=resolve_model("research"))
         self.tool_registry = tool_registry or ToolRegistry()
         self.mcp_client = mcp_client or MCPClient()
         self.rag_retriever = rag_retriever or RAGRetriever()
@@ -213,7 +214,7 @@ class CreativeAgent(BaseAgent):
         Args:
             llm_service: LLM service for generating responses.
         """
-        self.llm_service = llm_service or LLMService()
+        self.llm_service = llm_service or LLMService(model=resolve_model("creative"))
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
@@ -258,7 +259,7 @@ class DataAgent(BaseAgent):
             tool_registry: Local tool registry.
             mcp_client: MCP client for external tools.
         """
-        self.llm_service = llm_service or LLMService()
+        self.llm_service = llm_service or LLMService(model=resolve_model("data"))
         self.tool_registry = tool_registry or ToolRegistry()
         self.mcp_client = mcp_client or MCPClient()
         self.tools: List[Dict[str, Any]] = []
@@ -342,7 +343,7 @@ class ImageAgent(BaseAgent):
         Args:
             llm_service: LLM service for generating responses.
         """
-        self.llm_service = llm_service or LLMService()
+        self.llm_service = llm_service or LLMService(model=resolve_model("image"))
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
