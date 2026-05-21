@@ -6,7 +6,7 @@ set -euo pipefail
 
 VERBOSE=${1:-""}
 BASE_URL="http://localhost:8000"
-DB_URL="postgresql://kodee:kodee@localhost:5432/kodee_db"
+DB_URL="postgresql://postgres:postgres@localhost:5432/kodee"
 REDIS_HOST="localhost"
 REDIS_PORT="6379"
 QDRANT_URL="http://localhost:6333"
@@ -129,26 +129,26 @@ fi
 section "5. PostgreSQL Persistence"
 
 # Check tables exist
-if docker exec kodee_db psql -U kodee -d kodee_db -c "\dt" 2>/dev/null | grep -q "conversations"; then
+if docker exec kodee_db psql -U postgres -d kodee -c "\dt" 2>/dev/null | grep -q "conversations"; then
     log_pass "Table 'conversations' exists"
 else
     log_fail "Table 'conversations' NOT found"
 fi
 
-if docker exec kodee_db psql -U kodee -d kodee_db -c "\dt" 2>/dev/null | grep -q "messages"; then
+if docker exec kodee_db psql -U postgres -d kodee -c "\dt" 2>/dev/null | grep -q "messages"; then
     log_pass "Table 'messages' exists"
 else
     log_fail "Table 'messages' NOT found"
 fi
 
-if docker exec kodee_db psql -U kodee -d kodee_db -c "\dt" 2>/dev/null | grep -q "tool_executions"; then
+if docker exec kodee_db psql -U postgres -d kodee -c "\dt" 2>/dev/null | grep -q "tool_executions"; then
     log_pass "Table 'tool_executions' exists"
 else
     log_fail "Table 'tool_executions' NOT found"
 fi
 
 # Check session was persisted
-MSG_COUNT=$(docker exec kodee_db psql -U kodee -d kodee_db -t -c \
+MSG_COUNT=$(docker exec kodee_db psql -U postgres -d kodee -t -c \
     "SELECT COUNT(*) FROM messages WHERE content = 'ping';" 2>/dev/null | xargs || echo "0")
 if [[ "$MSG_COUNT" -gt "0" ]]; then
     log_pass "Session messages persisted ($MSG_COUNT rows)"
