@@ -40,6 +40,13 @@ def _get_session_factory():
     return _async_session_factory
 
 
+async def init_database():
+    """Create all tables if they don't exist."""
+    engine = _get_engine()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Yield an async database session.
 

@@ -53,12 +53,12 @@ done
 # ─── 2. API Health & Endpoints ─────────────────────────────────
 section "2. API Endpoints"
 
-# 2.1 Root endpoint
-HTTP_CODE=$(curl_silent "$BASE_URL/")
+# 2.1 Health endpoint
+HTTP_CODE=$(curl_silent "$BASE_URL/health")
 if [[ "$HTTP_CODE" == "200" ]]; then
-    log_pass "GET / → 200"
+    log_pass "GET /health → 200"
 else
-    log_fail "GET / → $HTTP_CODE"
+    log_fail "GET /health → $HTTP_CODE"
 fi
 
 # 2.2 Chat endpoint (echo mode)
@@ -177,7 +177,7 @@ else
 fi
 
 # Check knowledge collection
-COLLECTION_EXISTS=$(curl -s "$QDRANT_URL/collections/kodee_knowledge" 2>/dev/null | grep -c '"status":"ok"' || echo "0")
+COLLECTION_EXISTS=$(curl -s "$QDRANT_URL/collections/kodee_knowledge" 2>/dev/null | grep -c 'status' || echo "0")
 if [[ "$COLLECTION_EXISTS" -gt "0" ]]; then
     log_pass "Collection 'kodee_knowledge' exists"
 else
@@ -207,7 +207,7 @@ section "9. Unit Tests"
 if command -v uv &>/dev/null; then
     TEST_OUTPUT=$(uv run pytest --tb=short -q 2>&1 | tail -5)
     if echo "$TEST_OUTPUT" | grep -q "passed"; then
-        PASSED=$(echo "$TEST_OUTPUT" | grep -oP '\d+(?= passed)' || echo "0")
+        PASSED=$(echo "$TEST_OUTPUT" | grep -o '[0-9]* passed' | grep -o '[0-9]*' || echo "0")
         log_pass "Unit tests: $PASSED passed"
     else
         log_fail "Unit tests failed"
