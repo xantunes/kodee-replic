@@ -1,3 +1,4 @@
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -6,14 +7,27 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.models.chat import ChatRequest, ChatResponse
+import app.monitoring as monitoring
+from app.monitoring import (
+    add_request_middleware,
+    get_logger,
+    init_logging,
+    init_sentry,
+)
 from app.services.chat_service import ChatService
+
+logger = get_logger("app.main")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    init_logging()
+    init_sentry()
+    logger.info("Application startup complete")
     yield
     # Shutdown
+    logger.info("Application shutdown")
 
 
 app = FastAPI(
@@ -22,6 +36,9 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+# Monitoring middleware
+add_request_middleware(app)
 
 # CORS middleware
 app.add_middleware(
@@ -34,6 +51,19 @@ app.add_middleware(
 
 # Chat service instance
 chat_service = ChatService()
+
+
+@app.get("/metrics", tags=["monitoring"])
+async def metrics() -> JSONResponse:
+    """Return basic application metrics."""
+    uptime_seconds = round(time.time() - monitoring._start_time, 2)
+    return JSONResponse(
+        content={
+            "uptime_seconds": uptime_seconds,
+            "total_requests": monitoring.total_requests,
+            "active_sessions": monitoring.active_sessions,
+        }
+    )
 
 
 @app.get("/health", tags=["health"])
@@ -66,6 +96,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 async def websocket_chat(websocket: WebSocket, user_id: str) -> None:
     """WebSocket endpoint for real-time chat."""
     await websocket.accept()
+    monitoring.active_sessions += 1
     try:
         while True:
             data = await websocket.receive_json()
@@ -80,3 +111,5 @@ async def websocket_chat(websocket: WebSocket, user_id: str) -> None:
             await websocket.send_json(result)
     except WebSocketDisconnect:
         pass
+    finally:
+        monitoring.active_sessions -= 1
