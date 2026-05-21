@@ -12,7 +12,9 @@ from app.agents.router import AVAILABLE_AGENTS, AgentRouter
 from app.agents.specialized import (
     CodeAgent,
     CreativeAgent,
+    DataAgent,
     GeneralAgent,
+    ImageAgent,
     ResearchAgent,
 )
 
@@ -109,6 +111,18 @@ class TestSpecializedAgents:
         assert "creative" in agent.system_prompt.lower()
         assert agent.name == "creative"
 
+    def test_data_agent_system_prompt(self) -> None:
+        """Test DataAgent has the correct system prompt."""
+        agent = DataAgent()
+        assert "data analysis" in agent.system_prompt.lower()
+        assert agent.name == "data"
+
+    def test_image_agent_system_prompt(self) -> None:
+        """Test ImageAgent has the correct system prompt."""
+        agent = ImageAgent()
+        assert "image generation" in agent.system_prompt.lower()
+        assert agent.name == "image"
+
     @pytest.mark.asyncio
     async def test_general_agent_run(self) -> None:
         """Test GeneralAgent run method."""
@@ -186,6 +200,40 @@ class TestSpecializedAgents:
 
         assert result["message"] == "Creative response"
         assert result["agent"] == "creative"
+
+    @pytest.mark.asyncio
+    async def test_data_agent_run(self) -> None:
+        """Test DataAgent run method."""
+        mock_llm_service = MagicMock()
+        mock_llm_service.chat_with_tools = AsyncMock(
+            return_value=AIMessage(content="Data response")
+        )
+
+        with patch(
+            "app.agents.specialized.MCPClient"
+        ) as mock_mcp_client, patch(
+            "app.agents.specialized.ToolRegistry"
+        ) as mock_tool_registry:
+            mock_mcp_client.return_value.list_tools = AsyncMock(return_value=[])
+            mock_tool_registry.return_value.get_tools = MagicMock(return_value=[])
+
+            agent = DataAgent(llm_service=mock_llm_service)
+            result = await agent.run("Analyze my sales.csv", [])
+
+        assert result["message"] == "Data response"
+        assert result["agent"] == "data"
+
+    @pytest.mark.asyncio
+    async def test_image_agent_run(self) -> None:
+        """Test ImageAgent run method."""
+        mock_llm_service = MagicMock()
+        mock_llm_service.chat = AsyncMock(return_value="Image prompt response")
+
+        agent = ImageAgent(llm_service=mock_llm_service)
+        result = await agent.run("Create a prompt for a sunset", [])
+
+        assert result["message"] == "Image prompt response"
+        assert result["agent"] == "image"
 
     @pytest.mark.asyncio
     async def test_code_agent_filters_tools(self) -> None:
@@ -464,3 +512,67 @@ class TestOrchestratorHandoff:
         # Verify history contains both interactions
         history = orchestrator.get_history("session-1")
         assert len(history) == 4
+
+
+class TestDataTools:
+    """Tests for data analysis helper functions."""
+
+    def test_parse_csv_reads_rows(self, tmp_path) -> None:
+        """Test parse_csv returns correct row dictionaries."""
+        from app.agents.data_tools import parse_csv
+
+        csv_file = tmp_path / "sample.csv"
+        csv_file.write_text("name,age\nAlice,30\nBob,25\n")
+
+        result = parse_csv(str(csv_file))
+        assert len(result) == 2
+        assert result[0]["name"] == "Alice"
+        assert result[0]["age"] == "30"
+        assert result[1]["name"] == "Bob"
+
+    def test_parse_csv_missing_file(self, tmp_path) -> None:
+        """Test parse_csv returns empty list for missing file."""
+        from app.agents.data_tools import parse_csv
+
+        result = parse_csv(str(tmp_path / "nonexistent.csv"))
+        assert result == []
+
+    def test_summarize_data_numeric(self) -> None:
+        """Test summarize_data computes stats for numeric columns."""
+        from app.agents.data_tools import summarize_data
+
+        data = [
+            {"name": "Alice", "score": "100"},
+            {"name": "Bob", "score": "200"},
+            {"name": "Charlie", "score": "300"},
+        ]
+        result = summarize_data(data)
+
+        assert result["count"] == 3
+        assert "score" in result["columns"]
+        assert result["columns"]["score"]["type"] == "numeric"
+        assert result["columns"]["score"]["mean"] == 200.0
+        assert result["columns"]["score"]["min"] == 100.0
+        assert result["columns"]["score"]["max"] == 300.0
+        assert result["columns"]["score"]["sum"] == 600.0
+
+    def test_summarize_data_text_column(self) -> None:
+        """Test summarize_data identifies text columns."""
+        from app.agents.data_tools import summarize_data
+
+        data = [
+            {"name": "Alice", "score": "100"},
+            {"name": "Bob", "score": "200"},
+        ]
+        result = summarize_data(data)
+
+        assert result["columns"]["name"]["type"] == "text"
+        assert result["columns"]["name"]["non_null_count"] == 2
+
+    def test_summarize_data_empty(self) -> None:
+        """Test summarize_data handles empty data."""
+        from app.agents.data_tools import summarize_data
+
+        result = summarize_data([])
+        assert result["count"] == 0
+        assert result["columns"] == {}

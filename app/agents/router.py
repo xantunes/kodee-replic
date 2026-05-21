@@ -11,11 +11,13 @@ ROUTING_PROMPT = (
     "general (chitchat, simple questions), "
     "code (programming, debugging), "
     "research (facts, data lookup), "
-    "creative (writing, ideas). "
+    "creative (writing, ideas), "
+    "data (data analysis, CSV/JSON processing, charts), "
+    "image (image generation prompts, vision tasks). "
     "Respond with ONLY the agent name."
 )
 
-AVAILABLE_AGENTS = {"general", "code", "research", "creative"}
+AVAILABLE_AGENTS = {"general", "code", "research", "creative", "data", "image"}
 
 
 class AgentRouter:

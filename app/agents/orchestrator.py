@@ -8,7 +8,14 @@ from typing_extensions import TypedDict
 
 from app.agents.base import BaseAgent
 from app.agents.router import AgentRouter
-from app.agents.specialized import CodeAgent, CreativeAgent, GeneralAgent, ResearchAgent
+from app.agents.specialized import (
+    CodeAgent,
+    CreativeAgent,
+    DataAgent,
+    GeneralAgent,
+    ImageAgent,
+    ResearchAgent,
+)
 
 MAX_HISTORY = 10
 
@@ -32,6 +39,8 @@ class Orchestrator:
         code_agent: BaseAgent | None = None,
         research_agent: BaseAgent | None = None,
         creative_agent: BaseAgent | None = None,
+        data_agent: BaseAgent | None = None,
+        image_agent: BaseAgent | None = None,
     ) -> None:
         """Initialize the orchestrator with agents and a router.
 
@@ -41,6 +50,8 @@ class Orchestrator:
             code_agent: Agent for programming help.
             research_agent: Agent for factual research.
             creative_agent: Agent for creative writing.
+            data_agent: Agent for data analysis.
+            image_agent: Agent for image generation prompts.
         """
         self.router = router or AgentRouter()
         self.agents: Dict[str, BaseAgent] = {
@@ -48,6 +59,8 @@ class Orchestrator:
             "code": code_agent or CodeAgent(),
             "research": research_agent or ResearchAgent(),
             "creative": creative_agent or CreativeAgent(),
+            "data": data_agent or DataAgent(),
+            "image": image_agent or ImageAgent(),
         }
         self._history: Dict[str, List[BaseMessage]] = {}
         self._agent_usage: Dict[str, List[str]] = {}

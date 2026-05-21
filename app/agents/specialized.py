@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 from langchain_core.messages import BaseMessage
 
 from app.agents.base import BaseAgent
+from app.agents.data_tools import parse_csv, summarize_data
 from app.llm.llm_service import LLMService
 from app.llm.prompts import build_messages
 from app.llm.tool_registry import ToolRegistry
@@ -219,6 +220,135 @@ class CreativeAgent(BaseAgent):
         self, message: str, history: List[BaseMessage]
     ) -> Dict[str, Any]:
         """Process a creative user message.
+
+        Args:
+            message: The current user message.
+            history: Previous messages in the conversation.
+
+        Returns:
+            Dictionary with the agent's response text.
+        """
+        messages = build_messages(user_message=message, history=history)
+        response = await self.llm_service.chat(messages)
+        return {"message": response, "agent": self.name}
+
+
+class DataAgent(BaseAgent):
+    """Agent for data analysis, CSV/JSON processing, and chart suggestions."""
+
+    name = "data"
+    system_prompt = (
+        "You are Kodee, a data analysis assistant. "
+        "You help analyze datasets, suggest visualizations, and explain statistical concepts. "
+        "When provided with data files, you read them, analyze the contents, and offer actionable insights."
+    )
+
+    DATA_TOOL_NAMES = {"read_file", "calculate", "get_system_info"}
+
+    def __init__(
+        self,
+        llm_service: LLMService | None = None,
+        tool_registry: ToolRegistry | None = None,
+        mcp_client: MCPClient | None = None,
+    ) -> None:
+        """Initialize the data agent.
+
+        Args:
+            llm_service: LLM service for generating responses.
+            tool_registry: Local tool registry.
+            mcp_client: MCP client for external tools.
+        """
+        self.llm_service = llm_service or LLMService()
+        self.tool_registry = tool_registry or ToolRegistry()
+        self.mcp_client = mcp_client or MCPClient()
+        self.tools: List[Dict[str, Any]] = []
+
+    async def run(
+        self, message: str, history: List[BaseMessage]
+    ) -> Dict[str, Any]:
+        """Process a data-related user message.
+
+        Reads data files mentioned in the message, analyzes them,
+        and returns insights along with the LLM response.
+
+        Args:
+            message: The current user message.
+            history: Previous messages in the conversation.
+
+        Returns:
+            Dictionary with the agent's response text and analysis metadata.
+        """
+        # Attempt to read and analyze any CSV/JSON files referenced in the message
+        analysis: Dict[str, Any] = {}
+        file_path = self._extract_file_path(message)
+        if file_path:
+            data = parse_csv(file_path)
+            if data:
+                analysis = summarize_data(data)
+
+        messages = build_messages(user_message=message, history=history)
+        local_tools = self.tool_registry.get_tools()
+        mcp_tools = await self.mcp_client.list_tools()
+        all_tools = local_tools + mcp_tools
+
+        # Filter to data-relevant tools
+        self.tools = [
+            t for t in all_tools
+            if t.get("function", {}).get("name", "") in self.DATA_TOOL_NAMES
+        ]
+
+        response = await self.llm_service.chat_with_tools(messages, self.tools)
+        return {
+            "message": str(response.content),
+            "agent": self.name,
+            "analysis": analysis,
+        }
+
+    @staticmethod
+    def _extract_file_path(message: str) -> str | None:
+        """Heuristically extract a file path from the user message.
+
+        Args:
+            message: User message text.
+
+        Returns:
+            A potential file path, or None if none is detected.
+        """
+        import re
+
+        # Look for simple path patterns ending in .csv or .json
+        match = re.search(r"[\w./\\~-]+\.(csv|json)", message)
+        if match:
+            return match.group(0)
+        return None
+
+
+class ImageAgent(BaseAgent):
+    """Agent for image generation prompts and vision tasks."""
+
+    name = "image"
+    system_prompt = (
+        "You are Kodee, an image generation assistant. "
+        "You craft detailed prompts for image generation models and describe images. "
+        "You help users refine their visual ideas into high-quality generation prompts."
+    )
+
+    def __init__(
+        self,
+        llm_service: LLMService | None = None,
+    ) -> None:
+        """Initialize the image agent.
+
+        Args:
+            llm_service: LLM service for generating responses.
+        """
+        self.llm_service = llm_service or LLMService()
+        self.tools: List[Dict[str, Any]] = []
+
+    async def run(
+        self, message: str, history: List[BaseMessage]
+    ) -> Dict[str, Any]:
+        """Process an image-related user message.
 
         Args:
             message: The current user message.
