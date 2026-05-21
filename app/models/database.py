@@ -2,13 +2,60 @@
 
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict
+from typing import Any, AsyncGenerator, Dict
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 
+from app.config import settings
+
 Base = declarative_base()
+
+# Async engine and session factory
+_async_engine = None
+_async_session_factory = None
+
+
+def _get_engine():
+    global _async_engine
+    if _async_engine is None:
+        _async_engine = create_async_engine(
+            settings.DATABASE_URL,
+            echo=False,
+            future=True,
+        )
+    return _async_engine
+
+
+def _get_session_factory():
+    global _async_session_factory
+    if _async_session_factory is None:
+        _async_session_factory = async_sessionmaker(
+            _get_engine(),
+            class_=AsyncSession,
+            expire_on_commit=False,
+        )
+    return _async_session_factory
+
+
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+    """Yield an async database session.
+
+    Usage:
+        async with get_db_session() as session:
+            ...
+    """
+    async with _get_session_factory()() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
 
 def now_utc() -> datetime:

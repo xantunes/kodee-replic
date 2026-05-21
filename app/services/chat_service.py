@@ -8,6 +8,7 @@ from app.config import settings
 from app.services.llm_service import LLMService
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
+from app.services.persistence import save_chat_turn
 from app.utils.security import validate_chat_input
 
 
@@ -73,6 +74,15 @@ class ChatService:
             user_id=user_id,
             message=message,
             session_id=session_id,
+        )
+
+        # Best-effort persistence to PostgreSQL
+        await save_chat_turn(
+            user_id=user_id,
+            session_id=result["session_id"],
+            user_message=message,
+            assistant_message=result["message"],
+            actions=result.get("actions", []),
         )
 
         return {
