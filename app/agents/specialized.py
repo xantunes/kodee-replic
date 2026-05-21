@@ -9,6 +9,7 @@ from app.llm.llm_service import LLMService
 from app.llm.prompts import build_messages
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
+from app.rag.retriever import RAGRetriever
 
 
 class GeneralAgent(BaseAgent):
@@ -136,6 +137,7 @@ class ResearchAgent(BaseAgent):
         llm_service: LLMService | None = None,
         tool_registry: ToolRegistry | None = None,
         mcp_client: MCPClient | None = None,
+        rag_retriever: RAGRetriever | None = None,
     ) -> None:
         """Initialize the research agent.
 
@@ -143,10 +145,12 @@ class ResearchAgent(BaseAgent):
             llm_service: LLM service for generating responses.
             tool_registry: Local tool registry.
             mcp_client: MCP client for external tools.
+            rag_retriever: RAG retriever for document lookup.
         """
         self.llm_service = llm_service or LLMService()
         self.tool_registry = tool_registry or ToolRegistry()
         self.mcp_client = mcp_client or MCPClient()
+        self.rag_retriever = rag_retriever or RAGRetriever()
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
@@ -161,7 +165,19 @@ class ResearchAgent(BaseAgent):
         Returns:
             Dictionary with the agent's response text.
         """
-        messages = build_messages(user_message=message, history=history)
+        # Retrieve relevant documents from the knowledge base
+        retrieved_docs = await self.rag_retriever.retrieve(message, top_k=5)
+
+        if retrieved_docs:
+            augmented_message = await self.rag_retriever.augment_prompt(
+                message, retrieved_docs
+            )
+        else:
+            augmented_message = message
+
+        messages = build_messages(
+            user_message=augmented_message, history=history
+        )
         local_tools = self.tool_registry.get_tools()
         mcp_tools = await self.mcp_client.list_tools()
         all_tools = local_tools + mcp_tools
