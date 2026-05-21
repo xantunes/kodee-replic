@@ -202,11 +202,11 @@ class TestSpecializedAgents:
         )
 
         all_tools = [
-            {"function": {"name": "dns_create_record"}},
-            {"function": {"name": "dns_list_records"}},
-            {"function": {"name": "dns_delete_record"}},
+            {"function": {"name": "create_dns_record"}},
+            {"function": {"name": "list_dns_records"}},
+            {"function": {"name": "delete_dns_record"}},
             {"function": {"name": "get_weather"}},
-            {"function": {"name": "backup_create"}},
+            {"function": {"name": "create_backup"}},
         ]
 
         with patch(
@@ -223,11 +223,11 @@ class TestSpecializedAgents:
             tool_names = {
                 t["function"]["name"] for t in agent.tools
             }
-            assert "dns_create_record" in tool_names
-            assert "dns_list_records" in tool_names
-            assert "dns_delete_record" in tool_names
+            assert "create_dns_record" in tool_names
+            assert "list_dns_records" in tool_names
+            assert "delete_dns_record" in tool_names
             assert "get_weather" not in tool_names
-            assert "backup_create" not in tool_names
+            assert "create_backup" not in tool_names
 
     @pytest.mark.asyncio
     async def test_backup_agent_filters_tools(self) -> None:
@@ -238,10 +238,10 @@ class TestSpecializedAgents:
         )
 
         all_tools = [
-            {"function": {"name": "backup_create"}},
-            {"function": {"name": "backup_restore"}},
-            {"function": {"name": "backup_list"}},
-            {"function": {"name": "dns_create_record"}},
+            {"function": {"name": "create_backup"}},
+            {"function": {"name": "restore_backup"}},
+            {"function": {"name": "list_backups"}},
+            {"function": {"name": "create_dns_record"}},
         ]
 
         with patch(
@@ -258,10 +258,10 @@ class TestSpecializedAgents:
             tool_names = {
                 t["function"]["name"] for t in agent.tools
             }
-            assert "backup_create" in tool_names
-            assert "backup_restore" in tool_names
-            assert "backup_list" in tool_names
-            assert "dns_create_record" not in tool_names
+            assert "create_backup" in tool_names
+            assert "restore_backup" in tool_names
+            assert "list_backups" in tool_names
+            assert "create_dns_record" not in tool_names
 
     @pytest.mark.asyncio
     async def test_monitoring_agent_filters_tools(self) -> None:
@@ -274,8 +274,8 @@ class TestSpecializedAgents:
         all_tools = [
             {"function": {"name": "check_server_health"}},
             {"function": {"name": "get_website_status"}},
-            {"function": {"name": "get_system_metrics"}},
-            {"function": {"name": "backup_create"}},
+            {"function": {"name": "get_server_metrics"}},
+            {"function": {"name": "create_backup"}},
         ]
 
         with patch(
@@ -294,8 +294,8 @@ class TestSpecializedAgents:
             }
             assert "check_server_health" in tool_names
             assert "get_website_status" in tool_names
-            assert "get_system_metrics" in tool_names
-            assert "backup_create" not in tool_names
+            assert "get_server_metrics" in tool_names
+            assert "create_backup" not in tool_names
 
 
 class TestHandoffClassifier:

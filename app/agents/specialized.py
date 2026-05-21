@@ -73,11 +73,9 @@ class DNSAgent(BaseAgent):
     )
 
     DNS_TOOL_NAMES = {
-        "dns_create_record",
-        "dns_list_records",
-        "dns_delete_record",
-        "dns_update_record",
-        "get_system_info",
+        "create_dns_record",
+        "list_dns_records",
+        "delete_dns_record",
     }
 
     def __init__(
@@ -137,12 +135,9 @@ class BackupAgent(BaseAgent):
     )
 
     BACKUP_TOOL_NAMES = {
-        "backup_create",
-        "backup_restore",
-        "backup_list",
-        "backup_delete",
-        "backup_verify",
-        "get_system_info",
+        "create_backup",
+        "restore_backup",
+        "list_backups",
     }
 
     def __init__(
@@ -204,10 +199,7 @@ class MonitoringAgent(BaseAgent):
     MONITORING_TOOL_NAMES = {
         "check_server_health",
         "get_website_status",
-        "get_system_metrics",
-        "list_alerts",
-        "acknowledge_alert",
-        "get_system_info",
+        "get_server_metrics",
     }
 
     def __init__(
