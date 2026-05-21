@@ -129,6 +129,13 @@ class ToolRegistry:
             Result of the tool execution as a string.
         """
         if name not in self._handlers:
+            log_tool_execution(
+                tool_name=name,
+                arguments=args,
+                result=f"Error: Tool '{name}' not found.",
+                success=False,
+                duration_ms=0,
+            )
             return f"Error: Tool '{name}' not found."
         handler = self._handlers[name]
         start = time.time()

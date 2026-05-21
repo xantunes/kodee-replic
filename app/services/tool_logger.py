@@ -53,5 +53,6 @@ def log_tool_execution(
         result=result if isinstance(result, dict) else {"output": str(result)},
         success=success,
         duration_ms=duration_ms,
+        conversation_id=conversation_id,
     )
     return record

@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 
@@ -84,7 +84,7 @@ class ToolExecution(Base):
     arguments: Mapped[dict | None] = mapped_column(JSON, nullable=True, default=None)
     result: Mapped[dict | None] = mapped_column(JSON, nullable=True, default=None)
     success: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    duration_ms: Mapped[int | None] = mapped_column(nullable=True)
+    duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=now_utc, nullable=False
     )
