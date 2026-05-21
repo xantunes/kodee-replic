@@ -10,6 +10,7 @@ from app.utils.security import DESTRUCTIVE_TOOLS
 MAX_TOOL_ITERATIONS = 5
 
 ToolExecutor = Callable[[str, Dict[str, Any]], Union[str, Awaitable[str]]]
+ToolExecutedCallback = Callable[[str, Dict[str, Any], str, bool], Awaitable[None]]
 
 
 def _create_llm(model_override: str = "") -> Any:
@@ -95,6 +96,7 @@ class LLMService:
         tools: List[Dict[str, Any]],
         execute_local_tool: Optional[ToolExecutor] = None,
         execute_mcp_tool: Optional[ToolExecutor] = None,
+        on_tool_executed: Optional[ToolExecutedCallback] = None,
     ) -> AIMessage:
         """ReAct loop: chat with tools, execute tool calls, and return final response.
 
@@ -106,6 +108,8 @@ class LLMService:
             tools: List of tool definitions in OpenAI format.
             execute_local_tool: Callback for executing local registry tools.
             execute_mcp_tool: Callback for executing MCP server tools.
+            on_tool_executed: Optional async callback invoked after each tool
+                execution with (tool_name, args, result, success).
 
         Returns:
             Final AIMessage after all tool calls are resolved.
@@ -153,12 +157,22 @@ class LLMService:
 
                     # Try local tool first, then MCP
                     result = await _exec(execute_local_tool, name, args)
+                    success = not (result.startswith("Error") if result else True)
                     if not result or result.startswith("Error"):
                         mcp_result = await _exec(execute_mcp_tool, name, args)
                         if mcp_result and not mcp_result.startswith("Error"):
                             result = mcp_result
+                            success = True
                     if not result:
                         result = f"Error: Tool '{name}' is not available."
+                        success = False
+
+                    # Real-time persistence of tool execution
+                    if on_tool_executed is not None:
+                        try:
+                            await on_tool_executed(name, args, result, success)
+                        except Exception:
+                            pass
 
                     current_messages.append(
                         ToolMessage(content=result, tool_call_id=tool_call_id)

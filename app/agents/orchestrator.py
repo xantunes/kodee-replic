@@ -25,6 +25,7 @@ class OrchestratorState(TypedDict):
     history: List[BaseMessage]
     agent_name: str
     agent_response: Dict[str, Any]
+    session_id: str
 
 
 class Orchestrator:
@@ -88,7 +89,9 @@ class Orchestrator:
         async def agent_node(state: OrchestratorState) -> Dict[str, Any]:
             """Delegate to the selected agent and capture its response."""
             agent = self.agents[state["agent_name"]]
-            response = await agent.run(state["message"], state["history"])
+            response = await agent.run(
+                state["message"], state["history"], session_id=state.get("session_id", "")
+            )
             return {"agent_response": response}
 
         graph.add_node("router", route_node)
@@ -151,6 +154,7 @@ class Orchestrator:
             "history": history,
             "agent_name": "",
             "agent_response": {},
+            "session_id": session_id or "",
         }
 
         result_state = await self._graph.ainvoke(state)

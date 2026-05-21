@@ -15,13 +15,14 @@ class BaseAgent(ABC):
 
     @abstractmethod
     async def run(
-        self, message: str, history: List[BaseMessage]
+        self, message: str, history: List[BaseMessage], session_id: str = ""
     ) -> Dict[str, Any]:
         """Process a user message and return a response.
 
         Args:
             message: The current user message.
             history: Previous messages in the conversation.
+            session_id: Optional session identifier for persistence.
 
         Returns:
             Dictionary containing the agent's response.

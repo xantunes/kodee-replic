@@ -138,6 +138,67 @@ class ConversationRepository:
         return execution
 
 
+async def get_conversation_id_by_session(session_id: str) -> Optional[uuid.UUID]:
+    """Get the conversation UUID for a given session_id.
+
+    Args:
+        session_id: Session identifier.
+
+    Returns:
+        Conversation UUID or None if not found.
+    """
+    try:
+        async for db_session in get_db_session():
+            repo = ConversationRepository(db_session)
+            conv = await repo.get_or_create_conversation(
+                user_id="unknown", session_id=session_id
+            )
+            return conv.id
+    except Exception:
+        return None
+
+
+async def persist_tool_execution(
+    conversation_id: uuid.UUID,
+    tool_name: str,
+    arguments: Optional[Dict[str, Any]],
+    result: Optional[Dict[str, Any]],
+    success: bool,
+    duration_ms: Optional[int] = None,
+) -> Optional[uuid.UUID]:
+    """Persist a single tool execution to PostgreSQL in real time.
+
+    Best-effort: failures are logged but not raised.
+
+    Args:
+        conversation_id: UUID of the parent conversation.
+        tool_name: Name of the executed tool.
+        arguments: Tool arguments.
+        result: Tool result.
+        success: Whether the execution succeeded.
+        duration_ms: Execution duration in milliseconds.
+
+    Returns:
+        The ToolExecution UUID if persisted, None otherwise.
+    """
+    try:
+        async for db_session in get_db_session():
+            repo = ConversationRepository(db_session)
+            exec_record = await repo.add_tool_execution(
+                conversation_id=conversation_id,
+                tool_name=tool_name,
+                arguments=arguments,
+                result=result,
+                success=success,
+                duration_ms=duration_ms,
+            )
+            await db_session.commit()
+            return exec_record.id
+    except Exception as e:
+        logger.warning("Failed to persist tool execution: %s", e)
+        return None
+
+
 async def save_chat_turn(
     user_id: str,
     session_id: str,

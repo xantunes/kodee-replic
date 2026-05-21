@@ -10,6 +10,7 @@ from app.llm.model_resolver import resolve_model
 from app.llm.prompts import build_messages
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
+from app.services.persistence import get_conversation_id_by_session, persist_tool_execution
 
 
 class GeneralAgent(BaseAgent):
@@ -41,13 +42,14 @@ class GeneralAgent(BaseAgent):
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
-        self, message: str, history: List[BaseMessage]
+        self, message: str, history: List[BaseMessage], session_id: str = ""
     ) -> Dict[str, Any]:
         """Process a general user message.
 
         Args:
             message: The current user message.
             history: Previous messages in the conversation.
+            session_id: Optional session identifier for persistence.
 
         Returns:
             Dictionary with the agent's response text.
@@ -57,10 +59,22 @@ class GeneralAgent(BaseAgent):
         mcp_tools = await self.mcp_client.list_tools()
         self.tools = local_tools + mcp_tools
 
+        async def _on_tool_executed(name: str, args: dict, result: str, success: bool) -> None:
+            conv_id = await get_conversation_id_by_session(session_id)
+            if conv_id is not None:
+                await persist_tool_execution(
+                    conversation_id=conv_id,
+                    tool_name=name,
+                    arguments=args,
+                    result={"output": result},
+                    success=success,
+                )
+
         response = await self.llm_service.chat_with_tools_react(
             messages, self.tools,
             execute_local_tool=self.tool_registry.execute_tool,
             execute_mcp_tool=self.mcp_client.call_tool,
+            on_tool_executed=_on_tool_executed if session_id else None,
         )
         return {"message": str(response.content), "agent": self.name}
 
@@ -101,13 +115,14 @@ class DNSAgent(BaseAgent):
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
-        self, message: str, history: List[BaseMessage]
+        self, message: str, history: List[BaseMessage], session_id: str = ""
     ) -> Dict[str, Any]:
         """Process a DNS-related user message.
 
         Args:
             message: The current user message.
             history: Previous messages in the conversation.
+            session_id: Optional session identifier for persistence.
 
         Returns:
             Dictionary with the agent's response text.
@@ -123,10 +138,22 @@ class DNSAgent(BaseAgent):
             if t.get("function", {}).get("name", "") in self.DNS_TOOL_NAMES
         ]
 
+        async def _on_tool_executed(name: str, args: dict, result: str, success: bool) -> None:
+            conv_id = await get_conversation_id_by_session(session_id)
+            if conv_id is not None:
+                await persist_tool_execution(
+                    conversation_id=conv_id,
+                    tool_name=name,
+                    arguments=args,
+                    result={"output": result},
+                    success=success,
+                )
+
         response = await self.llm_service.chat_with_tools_react(
             messages, self.tools,
             execute_local_tool=self.tool_registry.execute_tool,
             execute_mcp_tool=self.mcp_client.call_tool,
+            on_tool_executed=_on_tool_executed if session_id else None,
         )
         return {"message": str(response.content), "agent": self.name}
 
@@ -167,13 +194,14 @@ class BackupAgent(BaseAgent):
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
-        self, message: str, history: List[BaseMessage]
+        self, message: str, history: List[BaseMessage], session_id: str = ""
     ) -> Dict[str, Any]:
         """Process a backup-related user message.
 
         Args:
             message: The current user message.
             history: Previous messages in the conversation.
+            session_id: Optional session identifier for persistence.
 
         Returns:
             Dictionary with the agent's response text.
@@ -189,10 +217,22 @@ class BackupAgent(BaseAgent):
             if t.get("function", {}).get("name", "") in self.BACKUP_TOOL_NAMES
         ]
 
+        async def _on_tool_executed(name: str, args: dict, result: str, success: bool) -> None:
+            conv_id = await get_conversation_id_by_session(session_id)
+            if conv_id is not None:
+                await persist_tool_execution(
+                    conversation_id=conv_id,
+                    tool_name=name,
+                    arguments=args,
+                    result={"output": result},
+                    success=success,
+                )
+
         response = await self.llm_service.chat_with_tools_react(
             messages, self.tools,
             execute_local_tool=self.tool_registry.execute_tool,
             execute_mcp_tool=self.mcp_client.call_tool,
+            on_tool_executed=_on_tool_executed if session_id else None,
         )
         return {"message": str(response.content), "agent": self.name}
 
@@ -232,13 +272,14 @@ class MonitoringAgent(BaseAgent):
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
-        self, message: str, history: List[BaseMessage]
+        self, message: str, history: List[BaseMessage], session_id: str = ""
     ) -> Dict[str, Any]:
         """Process a monitoring-related user message.
 
         Args:
             message: The current user message.
             history: Previous messages in the conversation.
+            session_id: Optional session identifier for persistence.
 
         Returns:
             Dictionary with the agent's response text.
@@ -254,9 +295,21 @@ class MonitoringAgent(BaseAgent):
             if t.get("function", {}).get("name", "") in self.MONITORING_TOOL_NAMES
         ]
 
+        async def _on_tool_executed(name: str, args: dict, result: str, success: bool) -> None:
+            conv_id = await get_conversation_id_by_session(session_id)
+            if conv_id is not None:
+                await persist_tool_execution(
+                    conversation_id=conv_id,
+                    tool_name=name,
+                    arguments=args,
+                    result={"output": result},
+                    success=success,
+                )
+
         response = await self.llm_service.chat_with_tools_react(
             messages, self.tools,
             execute_local_tool=self.tool_registry.execute_tool,
             execute_mcp_tool=self.mcp_client.call_tool,
+            on_tool_executed=_on_tool_executed if session_id else None,
         )
         return {"message": str(response.content), "agent": self.name}
