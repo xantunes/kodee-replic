@@ -1,10 +1,12 @@
 """MCP client for interacting with the Kodee MCP server."""
 
+import time
 from typing import Any, Dict, List
 
 # Import tool modules to ensure tool registration happens before client use
 from app.mcp.tools import mcp
 from app.mcp.tools import backup_tools, dns_tools, monitoring_tools, user_tools  # noqa: F401
+from app.services.tool_logger import log_tool_execution
 
 
 class MCPClient:
@@ -43,9 +45,21 @@ class MCPClient:
         Returns:
             Result of the tool execution as a string.
         """
+        start = time.time()
         try:
             result = await self._mcp.call_tool(name, args)
             texts = [content.text for content in result.content]
-            return "\n".join(texts)
+            output = "\n".join(texts)
+            success = True
         except Exception as e:
-            return f"Error calling MCP tool '{name}': {e}"
+            output = f"Error calling MCP tool '{name}': {e}"
+            success = False
+        duration_ms = int((time.time() - start) * 1000)
+        log_tool_execution(
+            tool_name=name,
+            arguments=args,
+            result=output,
+            success=success,
+            duration_ms=duration_ms,
+        )
+        return output

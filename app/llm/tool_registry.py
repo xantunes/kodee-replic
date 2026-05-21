@@ -1,7 +1,10 @@
 """Tool registry for managing callable tools."""
 
+import time
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional
+
+from app.services.tool_logger import log_tool_execution
 
 
 class ToolRegistry:
@@ -128,7 +131,19 @@ class ToolRegistry:
         if name not in self._handlers:
             return f"Error: Tool '{name}' not found."
         handler = self._handlers[name]
+        start = time.time()
         try:
-            return handler(**args)
+            result = handler(**args)
+            success = True
         except Exception as e:
-            return f"Error executing tool '{name}': {e}"
+            result = f"Error executing tool '{name}': {e}"
+            success = False
+        duration_ms = int((time.time() - start) * 1000)
+        log_tool_execution(
+            tool_name=name,
+            arguments=args,
+            result=result,
+            success=success,
+            duration_ms=duration_ms,
+        )
+        return result
