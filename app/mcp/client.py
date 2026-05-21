@@ -2,7 +2,9 @@
 
 from typing import Any, Dict, List
 
+# Import tool modules to ensure tool registration happens before client use
 from app.mcp.tools import mcp
+from app.mcp.tools import backup_tools, dns_tools, monitoring_tools, user_tools  # noqa: F401
 
 
 class MCPClient:
