@@ -43,3 +43,4 @@ fastmcp>=3.3.1
 opentelemetry-api>=1.22
 opentelemetry-sdk>=1.22
 opentelemetry-exporter-otlp>=1.22
+mcp>=1.6.0

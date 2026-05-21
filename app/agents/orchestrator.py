@@ -9,7 +9,7 @@ from typing_extensions import TypedDict
 from app.agents.base_agent import BaseAgent
 from app.agents.handoff import HandoffClassifier
 from app.agents.router import AgentRouter
-from app.agents.specialized import BackupAgent, DNSAgent, GeneralAgent, MonitoringAgent
+from app.agents.specialized import BackupAgent, DNSAgent, FortigateAgent, GeneralAgent, MonitoringAgent
 from app.rag.retriever import RAGRetriever
 from app.services.llm_service import LLMService
 from app.utils.session_store import InMemorySessionStore, SessionStore
@@ -39,6 +39,7 @@ class Orchestrator:
         dns_agent: BaseAgent | None = None,
         backup_agent: BaseAgent | None = None,
         monitoring_agent: BaseAgent | None = None,
+        fortigate_agent: BaseAgent | None = None,
         retriever: RAGRetriever | None = None,
         session_store: SessionStore | None = None,
         llm_service: LLMService | None = None,
@@ -52,6 +53,7 @@ class Orchestrator:
             dns_agent: Agent for DNS management tasks.
             backup_agent: Agent for backup and restore tasks.
             monitoring_agent: Agent for monitoring tasks.
+            fortigate_agent: Agent for FortiGate firewall tasks.
             retriever: RAG retriever for knowledge base augmentation.
             session_store: Optional persistent session store (e.g., Redis).
             llm_service: LLM service for context summarization.
@@ -63,6 +65,7 @@ class Orchestrator:
             "dns": dns_agent or DNSAgent(),
             "backup": backup_agent or BackupAgent(),
             "monitoring": monitoring_agent or MonitoringAgent(),
+            "fortigate": fortigate_agent or FortigateAgent(),
         }
         self.retriever = retriever or RAGRetriever()
         self.session_store = session_store or InMemorySessionStore()

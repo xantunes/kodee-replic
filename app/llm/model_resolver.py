@@ -9,6 +9,7 @@ _DEFAULT_MODELS: dict[str, str] = {
     "dns": "gpt-4.1",
     "backup": "gpt-4.1",
     "monitoring": "gpt-4.1",
+    "fortigate": "gpt-4.1",
     "handoff": "gpt-4.1-mini",
 }
 
@@ -19,6 +20,7 @@ _ENV_OVERRIDES: dict[str, str] = {
     "dns": settings.MODEL_DNS,
     "backup": settings.MODEL_BACKUP,
     "monitoring": settings.MODEL_MONITORING,
+    "fortigate": settings.MODEL_FORTIGATE,
     "handoff": settings.MODEL_HANDOFF,
 }
 

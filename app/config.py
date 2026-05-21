@@ -9,10 +9,17 @@ class Settings(BaseSettings):
     )
 
     # LLM Configuration
-    # OpenAI (direct) or Azure OpenAI
+    # OpenAI (direct), Azure OpenAI, or Kimi (Moonshot)
     OPENAI_API_KEY: str = ""
+    OPENAI_API_BASE: str = ""  # e.g. https://api.moonshot.ai/v1
     OPENAI_MODEL: str = "gpt-4o"
     OPENAI_TEMPERATURE: float = 0.2
+
+    # FortiGate MCP
+    FORTIOS_HOST: str = ""
+    FORTIOS_API_TOKEN: str = ""
+    FORTIOS_VERIFY_SSL: bool = True
+    FORTIOS_READONLY: bool = True
 
     # Azure OpenAI (takes precedence if AZURE_OPENAI_ENDPOINT is set)
     AZURE_OPENAI_ENDPOINT: str = ""
@@ -29,6 +36,7 @@ class Settings(BaseSettings):
     MODEL_BACKUP: str = ""       # default: full (backup and restore)
     MODEL_MONITORING: str = ""   # default: full (infrastructure monitoring)
     MODEL_HANDOFF: str = ""      # default: mini (human escalation detection)
+    MODEL_FORTIGATE: str = ""    # default: full (firewall management)
 
     # Database
     DATABASE_URL: str
