@@ -29,6 +29,8 @@ _FIREWALL_CONFIGS = [
         "token": settings.FORTIOS_INTERNET_API_TOKEN,
         "verify_ssl": settings.FORTIOS_INTERNET_VERIFY_SSL,
         "readonly": settings.FORTIOS_INTERNET_READONLY,
+        "vdom": settings.FORTIOS_INTERNET_VDOM_FW,
+        "vdom_ips": settings.FORTIOS_INTERNET_VDOM_IPS,
     },
     {
         "name": "datacenter",
@@ -37,6 +39,7 @@ _FIREWALL_CONFIGS = [
         "token": settings.FORTIOS_DATACENTER_API_TOKEN,
         "verify_ssl": settings.FORTIOS_DATACENTER_VERIFY_SSL,
         "readonly": settings.FORTIOS_DATACENTER_READONLY,
+        "vdom": settings.FORTIOS_DATACENTER_VDOM,
     },
     {
         "name": "vpn",
@@ -45,6 +48,7 @@ _FIREWALL_CONFIGS = [
         "token": settings.FORTIOS_VPN_API_TOKEN,
         "verify_ssl": settings.FORTIOS_VPN_VERIFY_SSL,
         "readonly": settings.FORTIOS_VPN_READONLY,
+        "vdom": settings.FORTIOS_VPN_VDOM,
     },
     {
         "name": "interna",
@@ -53,6 +57,7 @@ _FIREWALL_CONFIGS = [
         "token": settings.FORTIOS_INTERNA_API_TOKEN,
         "verify_ssl": settings.FORTIOS_INTERNA_VERIFY_SSL,
         "readonly": settings.FORTIOS_INTERNA_READONLY,
+        "vdom": settings.FORTIOS_INTERNA_VDOM,
     },
 ]
 
@@ -154,9 +159,26 @@ class FortigateMCPClient:
         if actual_name.startswith(prefix):
             actual_name = actual_name[len(prefix):]
 
+        # Inject VDOM into args if not present and configured
+        tool_args = dict(args)
+        if "vdom" not in tool_args and self.fw_config.get("vdom"):
+            # For security-feature tools on Internet firewall, use VDOM_IPS
+            if self.fw_name == "internet" and self.fw_config.get("vdom_ips"):
+                security_tools = {"fortios_ips_sensor", "fortios_antivirus_profile",
+                                  "fortios_webfilter_profile", "fortios_application_list",
+                                  "fortios_dnsfilter_profile", "fortios_ssl_ssh_profile"}
+                if actual_name in security_tools or any(kw in actual_name for kw in
+                                                         ["ips", "antivirus", "webfilter",
+                                                          "application", "dnsfilter", "ssl"]):
+                    tool_args["vdom"] = self.fw_config["vdom_ips"]
+                else:
+                    tool_args["vdom"] = self.fw_config["vdom"]
+            else:
+                tool_args["vdom"] = self.fw_config["vdom"]
+
         start = time.time()
         try:
-            result = await self._session.call_tool(actual_name, args)
+            result = await self._session.call_tool(actual_name, tool_args)
             texts = []
             for content in result.content:
                 if hasattr(content, "text"):
@@ -173,7 +195,7 @@ class FortigateMCPClient:
         duration_ms = int((time.time() - start) * 1000)
         log_tool_execution(
             tool_name=name,
-            arguments=args,
+            arguments=tool_args,
             result=output,
             success=success,
             duration_ms=duration_ms,
