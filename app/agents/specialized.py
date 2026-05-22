@@ -10,7 +10,7 @@ from app.llm.model_resolver import resolve_model
 from app.llm.prompts import build_messages
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
-from app.mcp.fortigate_client import FortigateMCPClient
+from app.mcp.fortigate_client import FortigateClientPool
 from app.services.persistence import get_conversation_id_by_session, persist_tool_execution
 
 
@@ -81,18 +81,24 @@ class GeneralAgent(BaseAgent):
 
 
 class FortigateAgent(BaseAgent):
-    """Agent for FortiGate firewall management tasks."""
+    """Agent for FortiGate firewall management tasks across multiple firewalls."""
 
     name = "fortigate"
     system_prompt = (
-        "You are Kodee, a FortiGate firewall specialist. "
+        "You are Kodee, a FortiGate firewall specialist managing multiple firewalls: "
+        "Internet, Datacenter, VPN, and Rede Interna. "
         "You help users manage firewall policies, monitor interfaces, "
         "check VPN status, analyze configurations, and run diagnostics. "
+        "When the user asks about a specific firewall, use the corresponding tools. "
         "Always confirm the impact before making changes to firewall rules. "
         "Use readonly operations when possible."
     )
 
     FORTIGATE_TOOL_PREFIXES = (
+        "internet_",
+        "datacenter_",
+        "vpn_",
+        "interna_",
         "fortios_",
     )
 
@@ -100,24 +106,24 @@ class FortigateAgent(BaseAgent):
         self,
         llm_service: LLMService | None = None,
         tool_registry: ToolRegistry | None = None,
-        mcp_client: FortigateMCPClient | None = None,
+        mcp_client: FortigateClientPool | None = None,
     ) -> None:
         """Initialize the FortiGate agent.
 
         Args:
             llm_service: LLM service for generating responses.
             tool_registry: Local tool registry.
-            mcp_client: FortiGate MCP client for external tools.
+            mcp_client: FortiGate client pool for multiple firewalls.
         """
         self.llm_service = llm_service or LLMService(model=resolve_model("fortigate"))
         self.tool_registry = tool_registry or ToolRegistry()
-        self.mcp_client = mcp_client or FortigateMCPClient()
+        self.mcp_client = mcp_client or FortigateClientPool()
         self.tools: List[Dict[str, Any]] = []
 
     async def run(
         self, message: str, history: List[BaseMessage], session_id: str = ""
     ) -> Dict[str, Any]:
-        """Process a FortiGate-related user message.
+        """Process a FortiGate-related user message across multiple firewalls.
 
         Args:
             message: The current user message.
@@ -129,10 +135,10 @@ class FortigateAgent(BaseAgent):
         """
         messages = build_messages(user_message=message, history=history)
         local_tools = self.tool_registry.get_tools()
-        mcp_tools = await self.mcp_client.list_tools()
+        mcp_tools = await self.mcp_client.list_all_tools()
         all_tools = local_tools + mcp_tools
 
-        # Filter to FortiGate-relevant tools
+        # Filter to FortiGate-relevant tools (all prefixed tools from firewalls)
         self.tools = [
             t for t in all_tools
             if t.get("function", {}).get("name", "").startswith(self.FORTIGATE_TOOL_PREFIXES)
