@@ -1,13 +1,12 @@
 """Tests for monitoring utilities."""
 
 import logging
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 from app.utils.monitoring import (
     JSONFormatter,
-    RequestLoggingMiddleware,
     add_request_middleware,
     get_logger,
     init_logging,

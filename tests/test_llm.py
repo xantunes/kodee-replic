@@ -254,7 +254,6 @@ class TestLLMServiceReAct:
     @pytest.mark.asyncio
     async def test_react_executes_tool_and_returns_final(self) -> None:
         """Test ReAct loop executes a tool and returns final response."""
-        from langchain_core.messages import ToolMessage
 
         mock_llm = MagicMock()
         mock_llm.bind_tools = MagicMock(return_value=mock_llm)
@@ -322,7 +321,6 @@ class TestLLMServiceReAct:
     @pytest.mark.asyncio
     async def test_react_destructive_tool_with_confirmed_flag(self) -> None:
         """Test that destructive tools execute when confirmed=True."""
-        from langchain_core.messages import ToolMessage
 
         mock_llm = MagicMock()
         mock_llm.bind_tools = MagicMock(return_value=mock_llm)
@@ -357,7 +355,6 @@ class TestLLMServiceReAct:
     @pytest.mark.asyncio
     async def test_react_falls_back_to_mcp_when_local_fails(self) -> None:
         """Test MCP execution is tried when local tool returns error."""
-        from langchain_core.messages import ToolMessage
 
         mock_llm = MagicMock()
         mock_llm.bind_tools = MagicMock(return_value=mock_llm)

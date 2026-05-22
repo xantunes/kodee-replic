@@ -17,6 +17,7 @@ from app.utils.monitoring import (
 )
 from app.utils.rate_limit import add_rate_limit_middleware
 from app.services.chat_service import ChatService
+from app.models.database import init_database
 
 logger = get_logger("app.main")
 
@@ -27,6 +28,7 @@ async def lifespan(app: FastAPI):
     init_logging()
     init_sentry()
     init_tracing()
+    await init_database()
     logger.info("Application startup complete")
     yield
     # Shutdown

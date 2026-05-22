@@ -12,11 +12,12 @@ ROUTING_PROMPT = (
     "general (chitchat, simple questions), "
     "dns (DNS management tasks, create/list/delete DNS records), "
     "backup (backup and restore tasks, create/restore/list backups), "
-    "monitoring (server health checks, website status, system metrics). "
+    "monitoring (server health checks, website status, system metrics), "
+    "fortigate (FortiGate firewall management, policies, VPN, diagnostics). "
     "Respond with ONLY the agent name."
 )
 
-AVAILABLE_AGENTS = {"general", "dns", "backup", "monitoring"}
+AVAILABLE_AGENTS = {"general", "dns", "backup", "monitoring", "fortigate"}
 
 
 class AgentRouter:

@@ -38,11 +38,14 @@ def _create_llm(model_override: str = "") -> Any:
     from langchain_openai import ChatOpenAI
 
     model = model_override or settings.OPENAI_MODEL
-    return ChatOpenAI(
-        model=model,
-        temperature=settings.OPENAI_TEMPERATURE,
-        api_key=settings.OPENAI_API_KEY,
-    )
+    kwargs = {
+        "model": model,
+        "temperature": settings.OPENAI_TEMPERATURE,
+        "api_key": settings.OPENAI_API_KEY,
+    }
+    if settings.OPENAI_API_BASE:
+        kwargs["base_url"] = settings.OPENAI_API_BASE
+    return ChatOpenAI(**kwargs)
 
 
 class LLMService:
@@ -114,7 +117,6 @@ class LLMService:
         Returns:
             Final AIMessage after all tool calls are resolved.
         """
-        import asyncio
         import inspect
 
         async def _exec(executor: Optional[ToolExecutor], name: str, args: Dict[str, Any]) -> str:

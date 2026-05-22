@@ -9,10 +9,38 @@ class Settings(BaseSettings):
     )
 
     # LLM Configuration
-    # OpenAI (direct) or Azure OpenAI
+    # OpenAI (direct), Azure OpenAI, or Kimi (Moonshot)
     OPENAI_API_KEY: str = ""
+    OPENAI_API_BASE: str = ""  # e.g. https://api.moonshot.ai/v1
     OPENAI_MODEL: str = "gpt-4o"
     OPENAI_TEMPERATURE: float = 0.2
+
+    # FortiGate MCP — Multi-firewall support
+    FORTIOS_INTERNET_HOST: str = ""
+    FORTIOS_INTERNET_API_TOKEN: str = ""
+    FORTIOS_INTERNET_VERIFY_SSL: bool = True
+    FORTIOS_INTERNET_READONLY: bool = True
+    FORTIOS_INTERNET_VDOM_FW: str = "VDOM_FW"
+    FORTIOS_INTERNET_VDOM_IPS: str = "VDOM_IPS"
+
+    FORTIOS_DATACENTER_HOST: str = ""
+    FORTIOS_DATACENTER_API_TOKEN: str = ""
+    FORTIOS_DATACENTER_VERIFY_SSL: bool = True
+    FORTIOS_DATACENTER_READONLY: bool = True
+    FORTIOS_DATACENTER_VDOM: str = "root"
+
+    FORTIOS_VPN_HOST: str = ""
+    FORTIOS_VPN_API_TOKEN: str = ""
+    FORTIOS_VPN_VERIFY_SSL: bool = True
+    FORTIOS_VPN_READONLY: bool = True
+    FORTIOS_VPN_VDOM: str = "VDOM_VPN"
+    FORTIOS_VPN_VDOM2: str = "VDOM_VPN2"
+
+    FORTIOS_INTERNA_HOST: str = ""
+    FORTIOS_INTERNA_API_TOKEN: str = ""
+    FORTIOS_INTERNA_VERIFY_SSL: bool = True
+    FORTIOS_INTERNA_READONLY: bool = True
+    FORTIOS_INTERNA_VDOM: str = "VDOM_RI"
 
     # Azure OpenAI (takes precedence if AZURE_OPENAI_ENDPOINT is set)
     AZURE_OPENAI_ENDPOINT: str = ""
@@ -29,6 +57,7 @@ class Settings(BaseSettings):
     MODEL_BACKUP: str = ""       # default: full (backup and restore)
     MODEL_MONITORING: str = ""   # default: full (infrastructure monitoring)
     MODEL_HANDOFF: str = ""      # default: mini (human escalation detection)
+    MODEL_FORTIGATE: str = ""    # default: full (firewall management)
 
     # Database
     DATABASE_URL: str

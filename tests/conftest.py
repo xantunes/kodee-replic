@@ -1,7 +1,7 @@
 """Shared pytest fixtures for the Kodee Replica test suite."""
 
 from typing import AsyncGenerator, Generator
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 import pytest_asyncio

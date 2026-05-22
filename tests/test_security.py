@@ -1,6 +1,5 @@
 """Tests for security utilities."""
 
-import pytest
 
 from app.utils.security import (
     DESTRUCTIVE_TOOLS,

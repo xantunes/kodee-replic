@@ -10,6 +10,7 @@ from app.llm.model_resolver import resolve_model
 from app.llm.prompts import build_messages
 from app.llm.tool_registry import ToolRegistry
 from app.mcp.client import MCPClient
+from app.mcp.fortigate_client import FortigateClientPool
 from app.services.persistence import get_conversation_id_by_session, persist_tool_execution
 
 
@@ -58,6 +59,102 @@ class GeneralAgent(BaseAgent):
         local_tools = self.tool_registry.get_tools()
         mcp_tools = await self.mcp_client.list_tools()
         self.tools = local_tools + mcp_tools
+
+        async def _on_tool_executed(name: str, args: dict, result: str, success: bool) -> None:
+            conv_id = await get_conversation_id_by_session(session_id)
+            if conv_id is not None:
+                await persist_tool_execution(
+                    conversation_id=conv_id,
+                    tool_name=name,
+                    arguments=args,
+                    result={"output": result},
+                    success=success,
+                )
+
+        response = await self.llm_service.chat_with_tools_react(
+            messages, self.tools,
+            execute_local_tool=self.tool_registry.execute_tool,
+            execute_mcp_tool=self.mcp_client.call_tool,
+            on_tool_executed=_on_tool_executed if session_id else None,
+        )
+        return {"message": str(response.content), "agent": self.name}
+
+
+class FortigateAgent(BaseAgent):
+    """Agent for FortiGate firewall management tasks across multiple firewalls."""
+
+    name = "fortigate"
+    system_prompt = (
+        "You are Kodee, a FortiGate firewall specialist managing 4 firewalls with specific scopes:\n\n"
+        "1. Firewall Internet:\n"
+        "   - VDOM_FW: Firewall rules, access policies, NAT\n"
+        "   - VDOM_IPS: Security features (IPS, Antivirus, WebFilter, App Control, DNS Filter, SSL Inspection)\n\n"
+        "2. Firewall Datacenter:\n"
+        "   - ONLY datacenter access rules and policies\n\n"
+        "3. Firewall VPN:\n"
+        "   - VDOM_VPN: SSL VPN and client IPsec VPNs\n"
+        "   - VDOM_VPN2: IPsec VPN tunnels (site-to-site)\n\n"
+        "4. Firewall Rede Interna:\n"
+        "   - VDOM_RI: Internal network rules and policies\n\n"
+        "CRITICAL: Route queries to the correct firewall and VDOM based on scope. "
+        "SSL VPN / client VPN → Firewall VPN (VDOM_VPN). "
+        "IPsec site-to-site → Firewall VPN (VDOM_VPN2). "
+        "Datacenter access → Firewall Datacenter only. "
+        "Internal network → Firewall Rede Interna (VDOM_RI). "
+        "Internet access rules → Firewall Internet (VDOM_FW). "
+        "Security features (IPS/AV/WebFilter) → Firewall Internet (VDOM_IPS). "
+        "Always confirm the impact before making changes. Use readonly operations when possible."
+    )
+
+    FORTIGATE_TOOL_PREFIXES = (
+        "internet_",
+        "datacenter_",
+        "vpn_",
+        "interna_",
+        "fortios_",
+    )
+
+    def __init__(
+        self,
+        llm_service: LLMService | None = None,
+        tool_registry: ToolRegistry | None = None,
+        mcp_client: FortigateClientPool | None = None,
+    ) -> None:
+        """Initialize the FortiGate agent.
+
+        Args:
+            llm_service: LLM service for generating responses.
+            tool_registry: Local tool registry.
+            mcp_client: FortiGate client pool for multiple firewalls.
+        """
+        self.llm_service = llm_service or LLMService(model=resolve_model("fortigate"))
+        self.tool_registry = tool_registry or ToolRegistry()
+        self.mcp_client = mcp_client or FortigateClientPool()
+        self.tools: List[Dict[str, Any]] = []
+
+    async def run(
+        self, message: str, history: List[BaseMessage], session_id: str = ""
+    ) -> Dict[str, Any]:
+        """Process a FortiGate-related user message across multiple firewalls.
+
+        Args:
+            message: The current user message.
+            history: Previous messages in the conversation.
+            session_id: Optional session identifier for persistence.
+
+        Returns:
+            Dictionary with the agent's response text.
+        """
+        messages = build_messages(user_message=message, history=history)
+        local_tools = self.tool_registry.get_tools()
+        mcp_tools = await self.mcp_client.list_all_tools()
+        all_tools = local_tools + mcp_tools
+
+        # Filter to FortiGate-relevant tools (all prefixed tools from firewalls)
+        self.tools = [
+            t for t in all_tools
+            if t.get("function", {}).get("name", "").startswith(self.FORTIGATE_TOOL_PREFIXES)
+        ]
 
         async def _on_tool_executed(name: str, args: dict, result: str, success: bool) -> None:
             conv_id = await get_conversation_id_by_session(session_id)

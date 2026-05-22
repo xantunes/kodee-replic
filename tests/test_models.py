@@ -1,7 +1,6 @@
 """Tests for SQLAlchemy database models."""
 
 import uuid
-from datetime import datetime, timezone
 
 from app.models.database import Conversation, Message, ToolExecution, now_utc
 

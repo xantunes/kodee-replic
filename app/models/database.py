@@ -2,7 +2,7 @@
 
 import uuid
 from datetime import datetime, timezone
-from typing import Any, AsyncGenerator, Dict
+from typing import AsyncGenerator
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -38,6 +38,13 @@ def _get_session_factory():
             expire_on_commit=False,
         )
     return _async_session_factory
+
+
+async def init_database():
+    """Create all tables if they don't exist."""
+    engine = _get_engine()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
