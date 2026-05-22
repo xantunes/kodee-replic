@@ -33,13 +33,14 @@ class Settings(BaseSettings):
     FORTIOS_VPN_API_TOKEN: str = ""
     FORTIOS_VPN_VERIFY_SSL: bool = True
     FORTIOS_VPN_READONLY: bool = True
-    FORTIOS_VPN_VDOM: str = "root"
+    FORTIOS_VPN_VDOM: str = "VDOM_VPN"
+    FORTIOS_VPN_VDOM2: str = "VDOM_VPN2"
 
     FORTIOS_INTERNA_HOST: str = ""
     FORTIOS_INTERNA_API_TOKEN: str = ""
     FORTIOS_INTERNA_VERIFY_SSL: bool = True
     FORTIOS_INTERNA_READONLY: bool = True
-    FORTIOS_INTERNA_VDOM: str = "root"
+    FORTIOS_INTERNA_VDOM: str = "VDOM_RI"
 
     # Azure OpenAI (takes precedence if AZURE_OPENAI_ENDPOINT is set)
     AZURE_OPENAI_ENDPOINT: str = ""

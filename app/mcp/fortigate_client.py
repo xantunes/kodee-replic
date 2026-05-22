@@ -49,6 +49,7 @@ _FIREWALL_CONFIGS = [
         "verify_ssl": settings.FORTIOS_VPN_VERIFY_SSL,
         "readonly": settings.FORTIOS_VPN_READONLY,
         "vdom": settings.FORTIOS_VPN_VDOM,
+        "vdom2": settings.FORTIOS_VPN_VDOM2,
     },
     {
         "name": "interna",
@@ -162,8 +163,8 @@ class FortigateMCPClient:
         # Inject VDOM into args if not present and configured
         tool_args = dict(args)
         if "vdom" not in tool_args and self.fw_config.get("vdom"):
-            # For security-feature tools on Internet firewall, use VDOM_IPS
             if self.fw_name == "internet" and self.fw_config.get("vdom_ips"):
+                # Internet firewall: VDOM_FW for access, VDOM_IPS for security
                 security_tools = {"fortios_ips_sensor", "fortios_antivirus_profile",
                                   "fortios_webfilter_profile", "fortios_application_list",
                                   "fortios_dnsfilter_profile", "fortios_ssl_ssh_profile"}
@@ -171,6 +172,14 @@ class FortigateMCPClient:
                                                          ["ips", "antivirus", "webfilter",
                                                           "application", "dnsfilter", "ssl"]):
                     tool_args["vdom"] = self.fw_config["vdom_ips"]
+                else:
+                    tool_args["vdom"] = self.fw_config["vdom"]
+            elif self.fw_name == "vpn" and self.fw_config.get("vdom2"):
+                # VPN firewall: VDOM_VPN for SSL/client IPsec, VDOM_VPN2 for IPsec
+                ipsec_tools = {"fortios_vpn_ipsec_phase1interface", "fortios_vpn_ipsec_phase2interface",
+                               "fortios_vpn_ipsec_forticlient"}
+                if actual_name in ipsec_tools or "ipsec" in actual_name:
+                    tool_args["vdom"] = self.fw_config["vdom2"]
                 else:
                     tool_args["vdom"] = self.fw_config["vdom"]
             else:
