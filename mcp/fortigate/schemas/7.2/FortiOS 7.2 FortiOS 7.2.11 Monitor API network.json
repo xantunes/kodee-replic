@@ -1,0 +1,682 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http:\/\/fortinet.com\/terms\/",
+        "version": "v2",
+        "contact": {
+            "url": "http:\/\/modskristensen.net",
+            "name": "FortiOS Web Application Team",
+            "email": "fosguiqateam@fortinet.com"
+        },
+        "description": "REST API for configuring FortiOS objects and settings",
+        "title": "FortiOS Monitor"
+    },
+    "host": "172.16.177.65",
+    "basePath": "\/api\/v2\/monitor",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application\/json"
+    ],
+    "produces": [
+        "application\/json"
+    ],
+    "securityDefinitions": {
+        "APIKeyQueryParam": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "APIKeyQueryParam": []
+        }
+    ],
+    "paths": {
+        "\/network\/arp": {
+            "get": {
+                "summary": "Get IPv4 ARP table.\nAccess Group: sysgrp.cfg",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "IPv4 ARP Table",
+                            "description": "List of IPv4 ARP associations for IP addresses to MAC addresses.",
+                            "type": "array",
+                            "items": {
+                                "title": "IPv4 ARP Entry",
+                                "description": "An IPv4 ARP entry.",
+                                "type": "object",
+                                "properties": {
+                                    "ip": {
+                                        "type": "string",
+                                        "title": "IP Address",
+                                        "description": "IP address of the ARP device."
+                                    },
+                                    "age": {
+                                        "type": "integer",
+                                        "title": "ARP Age",
+                                        "description": "Age of this ARP entry, in seconds."
+                                    },
+                                    "interface": {
+                                        "type": "string",
+                                        "title": "Interface Name",
+                                        "description": "Name of the listening interface."
+                                    },
+                                    "mac": {
+                                        "type": "string",
+                                        "title": "MAC Address",
+                                        "description": "MAC address of the ARP device."
+                                    }
+                                },
+                                "required": [
+                                    "ip",
+                                    "mac",
+                                    "interface"
+                                ]
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/lldp\/neighbors": {
+            "get": {
+                "summary": "List all active LLDP neighbors.\nAccess Group: netgrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "LLDP Neighbors",
+                            "description": "Network LLDP neighbors.",
+                            "type": "array",
+                            "items": {
+                                "title": "LLDP Neighbor",
+                                "description": "",
+                                "type": "object",
+                                "required": [
+                                    "mac",
+                                    "port",
+                                    "ttl"
+                                ],
+                                "properties": {
+                                    "mac": {
+                                        "type": "string",
+                                        "title": "MAC Address",
+                                        "description": "MAC address."
+                                    },
+                                    "chassis_id": {
+                                        "type": "string",
+                                        "title": "Chassis ID",
+                                        "description": "Chassis ID."
+                                    },
+                                    "port": {
+                                        "type": "integer",
+                                        "title": "Port",
+                                        "description": "Port."
+                                    },
+                                    "port_id": {
+                                        "type": "string",
+                                        "title": "Port ID",
+                                        "description": "Port ID."
+                                    },
+                                    "port_desc": {
+                                        "type": "string",
+                                        "title": "Port Description",
+                                        "description": "Port description."
+                                    },
+                                    "system_name": {
+                                        "type": "string",
+                                        "title": "System Name",
+                                        "description": "System name."
+                                    },
+                                    "system_desc": {
+                                        "type": "string",
+                                        "title": "System Description",
+                                        "description": "System description."
+                                    },
+                                    "ttl": {
+                                        "type": "integer",
+                                        "title": "TTL",
+                                        "description": "Time-To-Live value."
+                                    },
+                                    "addresses": {
+                                        "type": "array",
+                                        "title": "LLDP Addresses",
+                                        "description": "LLDP addresses.",
+                                        "items": {
+                                            "title": "LLDP Address",
+                                            "description": "LLDP address.",
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "title": "Type",
+                                                    "description": "Type of address.",
+                                                    "enum": [
+                                                        "ipv4",
+                                                        "ipv6"
+                                                    ]
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "title": "Address",
+                                                    "description": "IPv4 or IPv6 address."
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/lldp\/ports": {
+            "get": {
+                "summary": "List all active LLDP ports.\nAccess Group: netgrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "Filter: specific port name.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/dns\/latency": {
+            "get": {
+                "summary": "Get DNS latency.\nAccess Group: sysgrp.cfg",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/fortiguard\/live-services-latency": {
+            "get": {
+                "summary": "Get latency information for live FortiGuard services.\nAccess Group: sysgrp.cfg",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/ddns\/servers": {
+            "get": {
+                "summary": "Get DDNS servers.\nAccess Group: sysgrp.cfg",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/ddns\/lookup": {
+            "get": {
+                "summary": "Check DDNS FQDN availability.\nAccess Group: sysgrp.cfg",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "domain",
+                        "in": "query",
+                        "description": "Filter: domain to check.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/reverse-ip-lookup": {
+            "get": {
+                "summary": "Retrieve the resolved DNS domain name for a given IP address.\nAccess Group: any",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Reverse IP Lookup",
+                            "description": "Retrieve the resolved DNS domain name for a given IP address.",
+                            "type": "object",
+                            "required": [
+                                "resolved"
+                            ],
+                            "properties": {
+                                "domain": {
+                                    "type": "string",
+                                    "title": "Domain",
+                                    "description": "Resolved domain of the given IP address."
+                                },
+                                "resolved": {
+                                    "type": "boolean",
+                                    "title": "Resolved",
+                                    "description": "True when the domain is resolved."
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "ip",
+                        "in": "query",
+                        "description": "IP address (in dot-decimal notation).",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/debug-flow\/start": {
+            "post": {
+                "summary": "Start debug flow packet capture.\nAccess Group: netgrp.packet-capture",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "num_packets": {
+                                    "description": "Number of packets.",
+                                    "type": "integer"
+                                },
+                                "ipv6": {
+                                    "description": "Whether we are debugging IPv6 traffic.",
+                                    "type": "boolean"
+                                },
+                                "negate": {
+                                    "description": "Inverse IPv4 or IPv6 filter.",
+                                    "type": "boolean"
+                                },
+                                "addr_from": {
+                                    "description": "IPv4 or IPv6 address start of range.",
+                                    "type": "string"
+                                },
+                                "addr_to": {
+                                    "description": "IPv4 or IPv6 address end of range.",
+                                    "type": "string"
+                                },
+                                "daddr_from": {
+                                    "description": "Destination IPv4 or IPv6 address start of range.",
+                                    "type": "string"
+                                },
+                                "daddr_to": {
+                                    "description": "Destination IPv4 or IPv6 address end of range.",
+                                    "type": "string"
+                                },
+                                "saddr_from": {
+                                    "description": "Source IPv4 or IPv6 address start of range.",
+                                    "type": "string"
+                                },
+                                "saddr_to": {
+                                    "description": "Source IPv4 or IPv6 address end of range.",
+                                    "type": "string"
+                                },
+                                "port_from": {
+                                    "description": "Port from.",
+                                    "type": "integer"
+                                },
+                                "port_to": {
+                                    "description": "Port to.",
+                                    "type": "integer"
+                                },
+                                "dport_from": {
+                                    "description": "Destination port from.",
+                                    "type": "integer"
+                                },
+                                "dport_to": {
+                                    "description": "Destination port to.",
+                                    "type": "integer"
+                                },
+                                "sport_from": {
+                                    "description": "Source port from.",
+                                    "type": "integer"
+                                },
+                                "sport_to": {
+                                    "description": "Source port to.",
+                                    "type": "integer"
+                                },
+                                "proto": {
+                                    "description": "Protocol number.",
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "network"
+                ]
+            }
+        },
+        "\/network\/debug-flow\/stop": {
+            "post": {
+                "summary": "Stop debug flow packet capture.\nAccess Group: netgrp.packet-capture",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "network"
+                ]
+            }
+        }
+    }
+}

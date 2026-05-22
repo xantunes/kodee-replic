@@ -1,0 +1,2620 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http:\/\/fortinet.com\/terms\/",
+        "version": "v2",
+        "contact": {
+            "url": "http:\/\/modskristensen.net",
+            "name": "FortiOS Web Application Team",
+            "email": "fosguiqateam@fortinet.com"
+        },
+        "description": "REST API for configuring FortiOS objects and settings",
+        "title": "FortiOS Monitor"
+    },
+    "host": "172.16.177.65",
+    "basePath": "\/api\/v2\/monitor",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application\/json"
+    ],
+    "produces": [
+        "application\/json"
+    ],
+    "securityDefinitions": {
+        "APIKeyQueryParam": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "APIKeyQueryParam": []
+        }
+    ],
+    "definitions": {
+        "switch-controller--fsw-firmware--select--definitions--minor": {
+            "type": "number",
+            "title": "Minor Version",
+            "description": "Minor number of firmware version."
+        },
+        "switch-controller--fsw-firmware--select--definitions--build": {
+            "type": "number",
+            "title": "Firmware Build Number",
+            "description": "Build number of firmware version."
+        },
+        "switch-controller--fsw-firmware--select--definitions--patch": {
+            "type": "number",
+            "title": "Patch Version",
+            "description": "Patch number of firmware version."
+        },
+        "switch-controller--fsw-firmware--select--definitions--error": {
+            "type": "number",
+            "description": "Error code.",
+            "title": "Error"
+        },
+        "switch-controller--fsw-firmware--select--definitions--major": {
+            "type": "number",
+            "title": "Major Version",
+            "description": "Major number of firmware version."
+        },
+        "switch-controller--fsw-firmware--select--definitions--image_id": {
+            "type": "string",
+            "description": "FortiSwitch image ID.",
+            "title": "Image ID"
+        },
+        "switch-controller--fsw-firmware--select--definitions--model": {
+            "type": "string",
+            "description": "FortiSwitch model name.",
+            "title": "Model"
+        }
+    },
+    "paths": {
+        "\/switch-controller\/managed-switch": {
+            "get": {
+                "summary": "Retrieve statistics for configured FortiSwitches. Deprecated. It will be removed in 7.2.       It's replaced by \/api\/v2\/monitor\/switch-controller\/managed-switch\/status for faster performance.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "FortiSwitch Statistics",
+                            "description": "Retrieve statistics for configured FortiSwitches.",
+                            "type": "array",
+                            "deprecated": true,
+                            "x-scheduledRemoval": {
+                                "major": 7,
+                                "minor": 2
+                            },
+                            "items": {
+                                "title": "FortiSwitch Details",
+                                "description": "Details for a configured FortiSwitch.",
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "serial",
+                                    "fgt_peer_intf_name",
+                                    "state",
+                                    "status",
+                                    "ports",
+                                    "max_poe_budget",
+                                    "igmp_snooping_supported",
+                                    "dhcp_snooping_supported",
+                                    "mc_lag_supported",
+                                    "led_blink_supported",
+                                    "faceplate_xml",
+                                    "vdom",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "title": "FortiSwitch Name",
+                                        "description": "Alias (name) given to the FortiSwitch."
+                                    },
+                                    "serial": {
+                                        "type": "string",
+                                        "title": "FortiSwitch Serial",
+                                        "description": "FortiSwitch serial number."
+                                    },
+                                    "fgt_peer_intf_name": {
+                                        "type": "string",
+                                        "title": "FortiLink Interface",
+                                        "description": "FortiLink interface that the FortiSwitch is connected to."
+                                    },
+                                    "state": {
+                                        "type": "string",
+                                        "title": "State",
+                                        "description": "Authorization state of the FortiSwitch."
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "title": "Status",
+                                        "description": "Connection status of the FortiSwitch with this device."
+                                    },
+                                    "os_version": {
+                                        "type": "string",
+                                        "title": "Firmware Version",
+                                        "description": "Firmware version that is running on the FortiSwitch."
+                                    },
+                                    "connecting_from": {
+                                        "type": "string",
+                                        "title": "Connecting From",
+                                        "description": "FortiSwitch port that is connected to the FortiLink interface."
+                                    },
+                                    "join_time": {
+                                        "type": "string",
+                                        "title": "Join Time",
+                                        "description": "Time that the FortiSwitch joined this device."
+                                    },
+                                    "ports": {
+                                        "type": "array",
+                                        "title": "FortiSwitch Port Details",
+                                        "description": "Details for every port on the FortiSwitch.",
+                                        "items": {
+                                            "title": "FortiSwitch Specific Port Details",
+                                            "description": "Details of a port on the FortiSwitch.",
+                                            "type": "object",
+                                            "required": [
+                                                "interface",
+                                                "status",
+                                                "fortilink_port",
+                                                "vlan",
+                                                "fgt_peer_device_name",
+                                                "isl_peer_device_name",
+                                                "isl_peer_port_name",
+                                                "isl_peer_trunk_name"
+                                            ],
+                                            "properties": {
+                                                "interface": {
+                                                    "type": "string",
+                                                    "title": "Interface Name",
+                                                    "description": "Alias (name) given to the FortiSwitch port."
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "title": "Link Status",
+                                                    "description": "Link status of the FortiSwitch port."
+                                                },
+                                                "port_power": {
+                                                    "type": "number",
+                                                    "title": "Port Power",
+                                                    "description": "Port power measured in watts."
+                                                },
+                                                "power_status": {
+                                                    "type": "integer",
+                                                    "title": "Power Status",
+                                                    "description": "Power status of the PoE port (0 = Disabled, 1 = Searching, 2 = Delivering power, 3 = Test mode, 4 = Fault, 5 = Other fault, 6 = Requires power)."
+                                                },
+                                                "transceiver": {
+                                                    "type": "object",
+                                                    "title": "Transceiver",
+                                                    "description": "Information about the transceiver module connected to this port.",
+                                                    "required": [
+                                                        "fortiswitch_id",
+                                                        "port",
+                                                        "status"
+                                                    ],
+                                                    "properties": {
+                                                        "fortiswitch_id": {
+                                                            "type": "string",
+                                                            "title": "FortiSwitch Serial Number",
+                                                            "description": "Serial number of the FortiSwitch that the module is connected to."
+                                                        },
+                                                        "port": {
+                                                            "type": "string",
+                                                            "title": "FortiSwitch Port",
+                                                            "description": "FortiSwitch port that the transceiver module is connected to."
+                                                        },
+                                                        "status": {
+                                                            "type": "string",
+                                                            "title": "Status",
+                                                            "description": "Link status of the transceiver module."
+                                                        },
+                                                        "type": {
+                                                            "type": "string",
+                                                            "title": "Module Type",
+                                                            "description": "Type of the transceiver module.",
+                                                            "enum": [
+                                                                "QSFP-28",
+                                                                "QSFP+",
+                                                                "SFP\/SFP+",
+                                                                "QSFP\/QSFP+",
+                                                                "CFP\/CFP2\/CFP4",
+                                                                "QSFP+\/QSFP28",
+                                                                "Unk (0x00)"
+                                                            ]
+                                                        },
+                                                        "vendor": {
+                                                            "type": "string",
+                                                            "title": "Vendor Name",
+                                                            "description": "Name of the vendor for the transceiver module."
+                                                        },
+                                                        "vendor_part_number": {
+                                                            "type": "string",
+                                                            "title": "Module Vendor Part Number",
+                                                            "description": "Vendor part number for the transceiver module."
+                                                        },
+                                                        "vendor_serial_number": {
+                                                            "type": "string",
+                                                            "title": "Module Vendor Serial Number",
+                                                            "description": "Vendor serial number for the transceiver module."
+                                                        }
+                                                    }
+                                                },
+                                                "duplex": {
+                                                    "type": "string",
+                                                    "title": "Duplex Status",
+                                                    "description": "Duplex status of the FortiSwitch port."
+                                                },
+                                                "speed": {
+                                                    "type": "integer",
+                                                    "title": "Speed",
+                                                    "description": "Speed of the FortiSwitch port."
+                                                },
+                                                "fortilink_port": {
+                                                    "type": "boolean",
+                                                    "title": "FortiLink Port",
+                                                    "description": "True when the FortiSwitch port is connected to a FortiLink port on this FortiGate device."
+                                                },
+                                                "vlan": {
+                                                    "type": "string",
+                                                    "title": "VLAN",
+                                                    "description": "Native VLAN of the FortiSwitch port."
+                                                },
+                                                "fgt_peer_port_name": {
+                                                    "type": "string",
+                                                    "title": "Peer Port Name",
+                                                    "description": "FortiGate peer port name."
+                                                },
+                                                "fgt_peer_device_name": {
+                                                    "type": "string",
+                                                    "title": "Device Name",
+                                                    "description": "FortiGate peer device name."
+                                                },
+                                                "isl_peer_device_name": {
+                                                    "type": "string",
+                                                    "title": "Device Name",
+                                                    "description": "ISL peer device name."
+                                                },
+                                                "isl_peer_port_name": {
+                                                    "type": "string",
+                                                    "title": "Port Name",
+                                                    "description": "ISL peer port name."
+                                                },
+                                                "isl_peer_trunk_name": {
+                                                    "type": "string",
+                                                    "title": "Trunk Name",
+                                                    "description": "ISL peer trunk name."
+                                                },
+                                                "mclag_icl": {
+                                                    "type": "boolean",
+                                                    "title": "MC-LAG ICL",
+                                                    "description": "True when MC-LAG ICL is enabled."
+                                                },
+                                                "mclag": {
+                                                    "type": "boolean",
+                                                    "title": "MC-LAG",
+                                                    "description": "True when MC-LAG is enabled."
+                                                },
+                                                "poe_capable": {
+                                                    "type": "boolean",
+                                                    "title": "PoE Capable",
+                                                    "description": "True when the port is capable of power over ethernet."
+                                                },
+                                                "poe_status": {
+                                                    "type": "string",
+                                                    "title": "PoE Status",
+                                                    "description": "Status of the PoE port."
+                                                },
+                                                "tenant_vdom": {
+                                                    "type": "string",
+                                                    "title": "Tenant VDOM",
+                                                    "description": "Name of the tenant VDOM this port is exported to."
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "max_poe_budget": {
+                                        "type": "integer",
+                                        "title": "Total PoE Budget",
+                                        "description": "Maximum power that can be delivered by the FortiSwitch over all PoE ports."
+                                    },
+                                    "igmp_snooping_supported": {
+                                        "type": "boolean",
+                                        "title": "IGMP Snooping Supported",
+                                        "description": "True when IGMP snooping is supported."
+                                    },
+                                    "dhcp_snooping_supported": {
+                                        "type": "boolean",
+                                        "title": "DHCP Snooping Supported",
+                                        "description": "True when DHCP snooping is supported."
+                                    },
+                                    "mc_lag_supported": {
+                                        "type": "boolean",
+                                        "title": "MC-LAG Supported",
+                                        "description": "True when MC-LAG is supported."
+                                    },
+                                    "led_blink_supported": {
+                                        "type": "boolean",
+                                        "title": "LED Blinking Supported",
+                                        "description": "True when port LED blink is supported for this FortiSwitch."
+                                    },
+                                    "is_l3": {
+                                        "type": "boolean",
+                                        "title": "L3 FortiLink",
+                                        "description": "True when the FortiLink connection for this FortiSwitch is established over L3."
+                                    },
+                                    "port_stats": {
+                                        "title": "Port Statistics",
+                                        "type": "object",
+                                        "description": "A map of FortiSwitch ports to their statistics.",
+                                        "additionalProperties": {
+                                            "type": "object",
+                                            "title": "Port Bandwidth Statistics",
+                                            "description": "Port Bandwidth Statistics.",
+                                            "properties": {
+                                                "tx-bytes": {
+                                                    "type": "integer",
+                                                    "title": "Bytes Transmitted",
+                                                    "description": "The number of bytes transmitted."
+                                                },
+                                                "tx-packets": {
+                                                    "type": "integer",
+                                                    "title": "Packets Transmitted",
+                                                    "description": "The number of packets transmitted."
+                                                },
+                                                "tx-ucast": {
+                                                    "type": "integer",
+                                                    "title": "Unicast Packets Transmitted",
+                                                    "description": "The number of unicast packets transmitted."
+                                                },
+                                                "tx-mcast": {
+                                                    "type": "integer",
+                                                    "title": "Multicast Packets Transmitted",
+                                                    "description": "The number of multicast packets transmitted."
+                                                },
+                                                "tx-bcast": {
+                                                    "type": "integer",
+                                                    "title": "Transmissions Broadcast",
+                                                    "description": "The number of broadcasts transmitted."
+                                                },
+                                                "tx-errors": {
+                                                    "type": "integer",
+                                                    "title": "Transmission Errors",
+                                                    "description": "The number of transmission errors."
+                                                },
+                                                "tx-drops": {
+                                                    "type": "integer",
+                                                    "title": "Dropped Transmission Packets",
+                                                    "description": "The number of packets dropped during transmission."
+                                                },
+                                                "tx-oversize": {
+                                                    "type": "integer",
+                                                    "title": "Oversized Transmission Packets",
+                                                    "description": "The number of oversized packets transmitted."
+                                                },
+                                                "rx-bytes": {
+                                                    "type": "integer",
+                                                    "title": "Received Bytes",
+                                                    "description": "The number of received bytes."
+                                                },
+                                                "rx-packets": {
+                                                    "type": "integer",
+                                                    "title": "Received Packets",
+                                                    "description": "The number of received packets."
+                                                },
+                                                "rx-ucast": {
+                                                    "type": "integer",
+                                                    "title": "Received Unicast Packets",
+                                                    "description": "The number of received unicast packets."
+                                                },
+                                                "rx-mcast": {
+                                                    "type": "integer",
+                                                    "title": "Received Multicast Packets",
+                                                    "description": "The number of received multicast packets."
+                                                },
+                                                "rx-bcast": {
+                                                    "type": "integer",
+                                                    "title": "Received Broadcast Packets",
+                                                    "description": "The number of received broadcast packets."
+                                                },
+                                                "rx-errors": {
+                                                    "type": "integer",
+                                                    "title": "Receive Errors",
+                                                    "description": "The number of packets with errors that were received."
+                                                },
+                                                "rx-drops": {
+                                                    "type": "integer",
+                                                    "title": "Receive Drops",
+                                                    "description": "The number of packets that were dropped after being received."
+                                                },
+                                                "rx-oversize": {
+                                                    "type": "integer",
+                                                    "title": "Received Oversize",
+                                                    "description": "The number of oversized packets that were received."
+                                                },
+                                                "undersize": {
+                                                    "type": "integer",
+                                                    "title": "Undersized Packets",
+                                                    "description": "The number of undersized packets."
+                                                },
+                                                "fragments": {
+                                                    "type": "integer",
+                                                    "title": "Fragments",
+                                                    "description": "The number of fragmented packets."
+                                                },
+                                                "jabbers": {
+                                                    "type": "integer",
+                                                    "title": "Jabbers",
+                                                    "description": "The number of jabber packets."
+                                                },
+                                                "collisions": {
+                                                    "type": "integer",
+                                                    "title": "Collisions",
+                                                    "description": "The number of collisions."
+                                                },
+                                                "crc-alignments": {
+                                                    "type": "integer",
+                                                    "title": "CRC\/Alignments",
+                                                    "description": "The number of CRC\/alignment errors."
+                                                },
+                                                "l3packets": {
+                                                    "type": "integer",
+                                                    "title": "Layer 3 Packets",
+                                                    "description": "The number of Layer 3 packets."
+                                                }
+                                            },
+                                            "additionalProperties": true
+                                        }
+                                    },
+                                    "stp_status": {
+                                        "title": "STP Status",
+                                        "description": "STP status for ports.",
+                                        "type": "array",
+                                        "items": {
+                                            "title": "STP Status Instance",
+                                            "description": "An STP instance for a set of VLANs.",
+                                            "type": "object",
+                                            "properties": {
+                                                "bridge_mac": {
+                                                    "type": "string",
+                                                    "title": "Bridge MAC Address",
+                                                    "description": "MAC address for connecting to another device."
+                                                },
+                                                "instance_id": {
+                                                    "type": "integer",
+                                                    "title": "Instance ID",
+                                                    "description": "The ID of the instance."
+                                                },
+                                                "mapped_vlans": {
+                                                    "type": "string",
+                                                    "title": "Mapped VLANs",
+                                                    "description": "Mapped VLANs for the instance."
+                                                },
+                                                "port_stp_status": {
+                                                    "type": "array",
+                                                    "title": "Port STP Status List",
+                                                    "description": "List of STP status information for each port.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "title": "Port STP Status",
+                                                        "description": "Port STP status entry.",
+                                                        "properties": {
+                                                            "edge_status": {
+                                                                "type": "string",
+                                                                "title": "Edge Status",
+                                                                "description": "Edge status."
+                                                            },
+                                                            "port_cost": {
+                                                                "type": "integer",
+                                                                "title": "Port Cost",
+                                                                "description": "Cost of the port."
+                                                            },
+                                                            "port_name": {
+                                                                "type": "string",
+                                                                "title": "Port Name",
+                                                                "description": "Name of the port."
+                                                            },
+                                                            "port_priority": {
+                                                                "type": "integer",
+                                                                "title": "Port Priority",
+                                                                "description": "Priority of the port."
+                                                            },
+                                                            "port_role": {
+                                                                "type": "string",
+                                                                "title": "Port Role",
+                                                                "description": "Role of the port."
+                                                            },
+                                                            "port_speed": {
+                                                                "type": "number",
+                                                                "title": "Port Speed",
+                                                                "description": "Speed of the port."
+                                                            },
+                                                            "port_state": {
+                                                                "type": "string",
+                                                                "title": "Port State",
+                                                                "description": "STP state of the port."
+                                                            },
+                                                            "stp_lg_status": {
+                                                                "type": "string",
+                                                                "title": "STP LG Status",
+                                                                "description": "STP LG status."
+                                                            },
+                                                            "stp_status": {
+                                                                "type": "string",
+                                                                "title": "Configured STP Status",
+                                                                "description": "STP status configured on the port."
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "priority": {
+                                                    "type": "integer",
+                                                    "title": "Priority",
+                                                    "description": "Priority value of the instance."
+                                                },
+                                                "regional_macaddr": {
+                                                    "type": "string",
+                                                    "title": "Regional MAC Address",
+                                                    "description": "Regional MAC address."
+                                                },
+                                                "regional_pathcost": {
+                                                    "type": "integer",
+                                                    "title": "Regional Path Cost",
+                                                    "description": "Regional path cost."
+                                                },
+                                                "regional_priority": {
+                                                    "type": "integer",
+                                                    "title": "Regional Priority",
+                                                    "description": "Regional priority."
+                                                },
+                                                "regional_root_port": {
+                                                    "type": "string",
+                                                    "title": "Regional Root Port",
+                                                    "description": "Regional root port."
+                                                },
+                                                "remaining_hops": {
+                                                    "type": "integer",
+                                                    "title": "Remaining Hops",
+                                                    "description": "Number of hops remaining."
+                                                },
+                                                "root": {
+                                                    "type": "integer",
+                                                    "title": "Root",
+                                                    "description": "Root instance ID."
+                                                },
+                                                "root_macaddr": {
+                                                    "type": "string",
+                                                    "title": "Root MAC Address",
+                                                    "description": "Root MAC address."
+                                                },
+                                                "root_pathcost": {
+                                                    "type": "integer",
+                                                    "title": "Root Path Cost",
+                                                    "description": "Root path cost."
+                                                },
+                                                "root_priority": {
+                                                    "type": "integer",
+                                                    "title": "Root Priority",
+                                                    "description": "Root priority."
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "igmp_snooping_group": {
+                                        "title": "IGMP Snooping Groups",
+                                        "description": "Details of IGMP snooping groups.",
+                                        "type": "object",
+                                        "properties": {
+                                            "list": {
+                                                "type": "array",
+                                                "title": "IGMP Snooping Group List",
+                                                "description": "List of IGMP snooping groups.",
+                                                "items": {
+                                                    "type": "object",
+                                                    "title": "IGMP Snooping Group",
+                                                    "description": "A specific IGMP snooping group.",
+                                                    "properties": {
+                                                        "age-timeout": {
+                                                            "type": "integer",
+                                                            "title": "Age Timeout",
+                                                            "description": "Time before the group expires."
+                                                        },
+                                                        "group": {
+                                                            "type": "string",
+                                                            "title": "Group Name",
+                                                            "description": "Name of the group."
+                                                        },
+                                                        "igmp-version": {
+                                                            "type": "string",
+                                                            "title": "IGMP Version",
+                                                            "description": "Version of the IGMP protocol."
+                                                        },
+                                                        "of-port": {
+                                                            "type": "integer",
+                                                            "title": "Logical Port",
+                                                            "description": "Logical port number."
+                                                        },
+                                                        "port": {
+                                                            "type": "string",
+                                                            "title": "Port Name",
+                                                            "description": "Name of the port (Could be a trunk port)."
+                                                        },
+                                                        "vlan": {
+                                                            "type": "integer",
+                                                            "title": "VLAN ID",
+                                                            "description": "VLAN ID."
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "max-entries": {
+                                                "type": "integer",
+                                                "title": "Max Entries",
+                                                "description": "The maximum number of entries allowed in the list property."
+                                            },
+                                            "number-of-groups": {
+                                                "type": "integer",
+                                                "title": "Number of Groups",
+                                                "description": "Number of learned multicast groups."
+                                            }
+                                        }
+                                    },
+                                    "qos_stats": {
+                                        "title": "Quality of Service Statistics",
+                                        "description": "Quality of service statistics.",
+                                        "type": "array",
+                                        "items": {
+                                            "title": "Quality of Service Specific Item Details",
+                                            "description": "Details for a quality of service entry.",
+                                            "type": "object",
+                                            "required": [
+                                                "port"
+                                            ],
+                                            "properties": {
+                                                "port": {
+                                                    "type": "string",
+                                                    "title": "Port",
+                                                    "description": "The FortiSwitch port that the QoS statistics are for."
+                                                },
+                                                "queue": {
+                                                    "type": "array",
+                                                    "title": "Class of Service",
+                                                    "description": "Class of service statistics.",
+                                                    "items": {
+                                                        "title": "Class of Service Entry",
+                                                        "description": "Details of a class of service.",
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "index": {
+                                                                "type": "integer",
+                                                                "title": "Class of Service Index",
+                                                                "description": "The class of service index."
+                                                            },
+                                                            "packets": {
+                                                                "type": "integer",
+                                                                "title": "Packets",
+                                                                "description": "The number of packets."
+                                                            },
+                                                            "bytes": {
+                                                                "type": "integer",
+                                                                "title": "Bytes",
+                                                                "description": "The number of bytes."
+                                                            },
+                                                            "drop-packets": {
+                                                                "type": "integer",
+                                                                "title": "Dropped Packets",
+                                                                "description": "The number of dropped packets."
+                                                            }
+                                                        },
+                                                        "additionalProperties": true
+                                                    }
+                                                }
+                                            },
+                                            "additionalProperties": true
+                                        }
+                                    },
+                                    "faceplate_xml": {
+                                        "type": "string",
+                                        "title": "Faceplate XML",
+                                        "description": "An XML string containing information on how the FortiSwitch ports are configured."
+                                    },
+                                    "vdom": {
+                                        "type": "string",
+                                        "title": "VDOM",
+                                        "description": "The VDOM that the FortiSwitch is a part of."
+                                    },
+                                    "image_download_progress": {
+                                        "type": "integer",
+                                        "title": "Image Download Progress",
+                                        "description": "Image download progress in percentage."
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "title": "Managed Switch Type",
+                                        "description": "Type of the managed switch. A physical switch can be exported to another VDOM as a virtual switch.",
+                                        "enum": [
+                                            "physical",
+                                            "virtual"
+                                        ]
+                                    },
+                                    "owner_vdom": {
+                                        "type": "string",
+                                        "title": "Owner VDOM",
+                                        "description": "The VDOM that owns the physical FortiSwitch."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "Filter: FortiSwitch ID.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "poe",
+                        "in": "query",
+                        "description": "Filter: Retrieve PoE statistics for ports of configured FortiSwitches. Port power usage is in Watt units.",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "port_stats",
+                        "in": "query",
+                        "description": "Filter: Retrieve tx\/rx statistics for ports of configured FortiSwitches.",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "qos_stats",
+                        "in": "query",
+                        "description": "Filter: Retrieve QoS statistics for ports of configured FortiSwitches.",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "stp_status",
+                        "in": "query",
+                        "description": "Filter: Retrieve STP status for ports of configured FortiSwitches.",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "igmp_snooping_group",
+                        "in": "query",
+                        "description": "Filter: Retrieve IGMP Snooping group for configured FortiSwitches.",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "transceiver",
+                        "in": "query",
+                        "description": "Filter: Retrieve transceiver information for ports of configured FortiSwitches.",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/status": {
+            "get": {
+                "summary": "Retrieve statistics for configured FortiSwitches.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "FortiSwitch Status",
+                            "description": "Retrieve status for configured FortiSwitches.",
+                            "type": "array",
+                            "items": {
+                                "title": "FortiSwitch Details",
+                                "description": "Details for a configured FortiSwitch.",
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "serial",
+                                    "fgt_peer_intf_name",
+                                    "state",
+                                    "status",
+                                    "ports",
+                                    "max_poe_budget",
+                                    "igmp_snooping_supported",
+                                    "dhcp_snooping_supported",
+                                    "mc_lag_supported",
+                                    "led_blink_supported",
+                                    "faceplate_xml",
+                                    "vdom",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "title": "FortiSwitch Name",
+                                        "description": "Alias (name) given to the FortiSwitch."
+                                    },
+                                    "serial": {
+                                        "type": "string",
+                                        "title": "FortiSwitch Serial",
+                                        "description": "FortiSwitch serial number."
+                                    },
+                                    "fgt_peer_intf_name": {
+                                        "type": "string",
+                                        "title": "FortiLink Interface",
+                                        "description": "FortiLink interface that the FortiSwitch is connected to."
+                                    },
+                                    "state": {
+                                        "type": "string",
+                                        "title": "State",
+                                        "description": "Authorization state of the FortiSwitch."
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "title": "Status",
+                                        "description": "Connection status of the FortiSwitch with this device."
+                                    },
+                                    "os_version": {
+                                        "type": "string",
+                                        "title": "Firmware Version",
+                                        "description": "Firmware version that is running on the FortiSwitch."
+                                    },
+                                    "connecting_from": {
+                                        "type": "string",
+                                        "title": "Connecting From",
+                                        "description": "FortiSwitch port that is connected to the FortiLink interface."
+                                    },
+                                    "join_time": {
+                                        "type": "string",
+                                        "title": "Join Time",
+                                        "description": "Time that the FortiSwitch joined this device."
+                                    },
+                                    "ports": {
+                                        "type": "array",
+                                        "title": "FortiSwitch Port Details",
+                                        "description": "Details for every port on the FortiSwitch.",
+                                        "items": {
+                                            "title": "FortiSwitch Specific Port Details",
+                                            "description": "Details of a port on the FortiSwitch.",
+                                            "type": "object",
+                                            "required": [
+                                                "interface",
+                                                "status",
+                                                "fortilink_port",
+                                                "vlan",
+                                                "fgt_peer_device_name",
+                                                "isl_peer_device_name",
+                                                "isl_peer_port_name",
+                                                "isl_peer_trunk_name"
+                                            ],
+                                            "properties": {
+                                                "interface": {
+                                                    "type": "string",
+                                                    "title": "Interface Name",
+                                                    "description": "Alias (name) given to the FortiSwitch port."
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "title": "Link Status",
+                                                    "description": "Link status of the FortiSwitch port."
+                                                },
+                                                "port_power": {
+                                                    "type": "number",
+                                                    "title": "Port Power",
+                                                    "description": "Port power measured in watts."
+                                                },
+                                                "power_status": {
+                                                    "type": "integer",
+                                                    "title": "Power Status",
+                                                    "description": "Power status of the PoE port (0 = Disabled, 1 = Searching, 2 = Delivering power, 3 = Test mode, 4 = Fault, 5 = Other fault, 6 = Requires power)."
+                                                },
+                                                "stp_status": {
+                                                    "title": "STP Status",
+                                                    "description": "Port STP status.",
+                                                    "enum": [
+                                                        "",
+                                                        "disabled",
+                                                        "forwarding",
+                                                        "discarding",
+                                                        "unavailable"
+                                                    ],
+                                                    "type": "string"
+                                                },
+                                                "igmp_snooping_group": {
+                                                    "title": "IGMP Snooping Groups",
+                                                    "description": "Details of IGMP snooping groups.",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "group_count": {
+                                                            "type": "integer",
+                                                            "title": "Number of Groups",
+                                                            "description": "Number of learned multicast groups."
+                                                        }
+                                                    }
+                                                },
+                                                "dhcp_snooping": {
+                                                    "title": "DHCP Snooping",
+                                                    "description": "Details of DHCP Snooping.",
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "untrusted": {
+                                                            "type": "integer",
+                                                            "title": "Number of Untrusted DHCP Servers",
+                                                            "description": "Number of untrusted DHCP servers detected."
+                                                        }
+                                                    }
+                                                },
+                                                "transceiver": {
+                                                    "type": "object",
+                                                    "title": "Transceiver",
+                                                    "description": "Information about the transceiver module connected to this port.",
+                                                    "required": [
+                                                        "vendor_part_number",
+                                                        "vendor"
+                                                    ],
+                                                    "properties": {
+                                                        "vendor": {
+                                                            "type": "string",
+                                                            "title": "Vendor Name",
+                                                            "description": "Name of the vendor for the transceiver module."
+                                                        },
+                                                        "vendor_part_number": {
+                                                            "type": "string",
+                                                            "title": "Module Vendor Part Number",
+                                                            "description": "Vendor part number for the transceiver module."
+                                                        }
+                                                    }
+                                                },
+                                                "duplex": {
+                                                    "type": "string",
+                                                    "title": "Duplex Status",
+                                                    "description": "Duplex status of the FortiSwitch port."
+                                                },
+                                                "speed": {
+                                                    "type": "integer",
+                                                    "title": "Speed",
+                                                    "description": "Speed of the FortiSwitch port."
+                                                },
+                                                "fortilink_port": {
+                                                    "type": "boolean",
+                                                    "title": "FortiLink Port",
+                                                    "description": "True when the FortiSwitch port is connected to a FortiLink port on this FortiGate device."
+                                                },
+                                                "vlan": {
+                                                    "type": "string",
+                                                    "title": "VLAN",
+                                                    "description": "Native VLAN of the FortiSwitch port."
+                                                },
+                                                "fgt_peer_port_name": {
+                                                    "type": "string",
+                                                    "title": "Peer Port Name",
+                                                    "description": "FortiGate peer port name."
+                                                },
+                                                "fgt_peer_device_name": {
+                                                    "type": "string",
+                                                    "title": "Device Name",
+                                                    "description": "FortiGate peer device name."
+                                                },
+                                                "isl_peer_device_name": {
+                                                    "type": "string",
+                                                    "title": "Device Name",
+                                                    "description": "ISL peer device name."
+                                                },
+                                                "isl_peer_port_name": {
+                                                    "type": "string",
+                                                    "title": "Port Name",
+                                                    "description": "ISL peer port name."
+                                                },
+                                                "isl_peer_trunk_name": {
+                                                    "type": "string",
+                                                    "title": "Trunk Name",
+                                                    "description": "ISL peer trunk name."
+                                                },
+                                                "mclag_icl": {
+                                                    "type": "boolean",
+                                                    "title": "MC-LAG ICL",
+                                                    "description": "True when MC-LAG ICL is enabled."
+                                                },
+                                                "mclag": {
+                                                    "type": "boolean",
+                                                    "title": "MC-LAG",
+                                                    "description": "True when MC-LAG is enabled."
+                                                },
+                                                "poe_capable": {
+                                                    "type": "boolean",
+                                                    "title": "PoE Capable",
+                                                    "description": "True when the port is capable of power over ethernet."
+                                                },
+                                                "poe_status": {
+                                                    "type": "string",
+                                                    "title": "PoE Status",
+                                                    "description": "Status of the PoE port."
+                                                },
+                                                "tenant_vdom": {
+                                                    "type": "string",
+                                                    "title": "Tenant VDOM",
+                                                    "description": "Name of the tenant VDOM this port is exported to."
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "max_poe_budget": {
+                                        "type": "integer",
+                                        "title": "Total PoE Budget",
+                                        "description": "Maximum power that can be delivered by the FortiSwitch over all PoE ports."
+                                    },
+                                    "igmp_snooping_supported": {
+                                        "type": "boolean",
+                                        "title": "IGMP Snooping Supported",
+                                        "description": "True when IGMP snooping is supported."
+                                    },
+                                    "dhcp_snooping_supported": {
+                                        "type": "boolean",
+                                        "title": "DHCP Snooping Supported",
+                                        "description": "True when DHCP snooping is supported."
+                                    },
+                                    "mc_lag_supported": {
+                                        "type": "boolean",
+                                        "title": "MC-LAG Supported",
+                                        "description": "True when MC-LAG is supported."
+                                    },
+                                    "led_blink_supported": {
+                                        "type": "boolean",
+                                        "title": "LED Blinking Supported",
+                                        "description": "True when port LED blink is supported for this FortiSwitch."
+                                    },
+                                    "is_l3": {
+                                        "type": "boolean",
+                                        "title": "L3 FortiLink",
+                                        "description": "True when the FortiLink connection for this FortiSwitch is established over L3."
+                                    },
+                                    "faceplate_xml": {
+                                        "type": "string",
+                                        "title": "Faceplate XML",
+                                        "description": "An XML string containing information on how the FortiSwitch ports are configured."
+                                    },
+                                    "vdom": {
+                                        "type": "string",
+                                        "title": "VDOM",
+                                        "description": "The VDOM that the FortiSwitch is a part of."
+                                    },
+                                    "image_download_progress": {
+                                        "type": "integer",
+                                        "title": "Image Download Progress",
+                                        "description": "Image download progress in percentage."
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "title": "Managed Switch Type",
+                                        "description": "Type of the managed switch. A physical switch can be exported to another VDOM as a virtual switch.",
+                                        "enum": [
+                                            "physical",
+                                            "virtual"
+                                        ]
+                                    },
+                                    "owner_vdom": {
+                                        "type": "string",
+                                        "title": "Owner VDOM",
+                                        "description": "The VDOM that owns the physical FortiSwitch."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "Filter: FortiSwitch ID.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/port-stats": {
+            "get": {
+                "summary": "Retrieve port statistics for configured FortiSwitches.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Port Statistics",
+                            "type": "array",
+                            "description": "Array of managed switch port statistics.",
+                            "items": {
+                                "title": "Switch Entry",
+                                "description": "A switch with port statistics.",
+                                "type": "object",
+                                "properties": {
+                                    "serial": {
+                                        "type": "string",
+                                        "title": "FortiSwitch Serial",
+                                        "description": "FortiSwitch serial number."
+                                    },
+                                    "ports": {
+                                        "type": "object",
+                                        "title": "Statistics Port Map",
+                                        "description": "A map of FortiSwitch ports to their statistics.",
+                                        "additionalProperties": {
+                                            "type": "object",
+                                            "title": "Port Bandwidth Statistics",
+                                            "description": "Port Bandwidth Statistics.",
+                                            "properties": {
+                                                "tx-bytes": {
+                                                    "type": "integer",
+                                                    "title": "Bytes Transmitted",
+                                                    "description": "The number of bytes transmitted."
+                                                },
+                                                "tx-packets": {
+                                                    "type": "integer",
+                                                    "title": "Packets Transmitted",
+                                                    "description": "The number of packets transmitted."
+                                                },
+                                                "tx-ucast": {
+                                                    "type": "integer",
+                                                    "title": "Unicast Packets Transmitted",
+                                                    "description": "The number of unicast packets transmitted."
+                                                },
+                                                "tx-mcast": {
+                                                    "type": "integer",
+                                                    "title": "Multicast Packets Transmitted",
+                                                    "description": "The number of multicast packets transmitted."
+                                                },
+                                                "tx-bcast": {
+                                                    "type": "integer",
+                                                    "title": "Transmissions Broadcast",
+                                                    "description": "The number of broadcasts transmitted."
+                                                },
+                                                "tx-errors": {
+                                                    "type": "integer",
+                                                    "title": "Transmission Errors",
+                                                    "description": "The number of transmission errors."
+                                                },
+                                                "tx-drops": {
+                                                    "type": "integer",
+                                                    "title": "Dropped Transmission Packets",
+                                                    "description": "The number of packets dropped during transmission."
+                                                },
+                                                "tx-oversize": {
+                                                    "type": "integer",
+                                                    "title": "Oversized Transmission Packets",
+                                                    "description": "The number of oversized packets transmitted."
+                                                },
+                                                "rx-bytes": {
+                                                    "type": "integer",
+                                                    "title": "Received Bytes",
+                                                    "description": "The number of received bytes."
+                                                },
+                                                "rx-packets": {
+                                                    "type": "integer",
+                                                    "title": "Received Packets",
+                                                    "description": "The number of received packets."
+                                                },
+                                                "rx-ucast": {
+                                                    "type": "integer",
+                                                    "title": "Received Unicast Packets",
+                                                    "description": "The number of received unicast packets."
+                                                },
+                                                "rx-mcast": {
+                                                    "type": "integer",
+                                                    "title": "Received Multicast Packets",
+                                                    "description": "The number of received multicast packets."
+                                                },
+                                                "rx-bcast": {
+                                                    "type": "integer",
+                                                    "title": "Received Broadcast Packets",
+                                                    "description": "The number of received broadcast packets."
+                                                },
+                                                "rx-errors": {
+                                                    "type": "integer",
+                                                    "title": "Receive Errors",
+                                                    "description": "The number of packets with errors that were received."
+                                                },
+                                                "rx-drops": {
+                                                    "type": "integer",
+                                                    "title": "Receive Drops",
+                                                    "description": "The number of packets that were dropped after being received."
+                                                },
+                                                "rx-oversize": {
+                                                    "type": "integer",
+                                                    "title": "Received Oversize",
+                                                    "description": "The number of oversized packets that were received."
+                                                },
+                                                "undersize": {
+                                                    "type": "integer",
+                                                    "title": "Undersized Packets",
+                                                    "description": "The number of undersized packets."
+                                                },
+                                                "fragments": {
+                                                    "type": "integer",
+                                                    "title": "Fragments",
+                                                    "description": "The number of fragmented packets."
+                                                },
+                                                "jabbers": {
+                                                    "type": "integer",
+                                                    "title": "Jabbers",
+                                                    "description": "The number of jabber packets."
+                                                },
+                                                "collisions": {
+                                                    "type": "integer",
+                                                    "title": "Collisions",
+                                                    "description": "The number of collisions."
+                                                },
+                                                "crc-alignments": {
+                                                    "type": "integer",
+                                                    "title": "CRC\/Alignments",
+                                                    "description": "The number of CRC\/alignment errors."
+                                                },
+                                                "l3packets": {
+                                                    "type": "integer",
+                                                    "title": "Layer 3 Packets",
+                                                    "description": "The number of Layer 3 packets."
+                                                }
+                                            },
+                                            "additionalProperties": true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "Filter: FortiSwitch ID.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/update": {
+            "post": {
+                "summary": "Update administrative state for a given FortiSwitch (enable or disable authorization).\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "mkey": {
+                                    "description": "FortiSwitch name.",
+                                    "type": "string"
+                                },
+                                "admin": {
+                                    "description": "New FortiSwitch administrative state [enable|disable|discovered].",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/restart": {
+            "post": {
+                "summary": "Restart a given FortiSwitch.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "mkey": {
+                                    "description": "Name of managed FortiSwitch.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/poe-reset": {
+            "post": {
+                "summary": "Reset PoE on a given FortiSwitch's port.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "mkey": {
+                                    "description": "Name of managed FortiSwitch.",
+                                    "type": "string"
+                                },
+                                "port": {
+                                    "description": "Name of port to reset PoE on.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/faceplate-xml": {
+            "get": {
+                "summary": "Retrieve XML for rendering FortiSwitch faceplate widget.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "Name of managed FortiSwitch.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/factory-reset": {
+            "post": {
+                "summary": "Send 'Factory Reset' command to a given FortiSwitch.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "mkey": {
+                                    "description": "Name of managed FortiSwitch.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/dhcp-snooping": {
+            "get": {
+                "summary": "Retrieve DHCP servers monitored by FortiSwitches.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "DHCP Snooping",
+                            "description": "Retrieve DHCP servers monitored by FortiSwitches.",
+                            "type": "array",
+                            "items": {
+                                "title": "DHCP Server",
+                                "description": "A DHCP server that is monitored by configured FortiSwitches.",
+                                "type": "object",
+                                "required": [
+                                    "switch_id",
+                                    "snooping_entries"
+                                ],
+                                "properties": {
+                                    "switch_id": {
+                                        "type": "string",
+                                        "title": "FortiSwitch ID",
+                                        "description": "FortiSwitch identifier (serial number)."
+                                    },
+                                    "snooping_entries": {
+                                        "title": "DHCP Servers",
+                                        "description": "FortiSwitch detected DHCP servers.",
+                                        "type": "array"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/transceivers": {
+            "get": {
+                "summary": "Get a list of transceivers being used by managed FortiSwitches.\nAccess Group: any",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "FortiSwitch Transceiver Information",
+                            "description": "List information about transceiver modules that are connected to managed FortiSwitches.",
+                            "type": "array",
+                            "items": {
+                                "title": "FortiSwitch Transceiver Entry",
+                                "description": "Details of a transceiver module that is connected to a FortiSwitch.",
+                                "type": "object",
+                                "required": [
+                                    "fortiswitch_id",
+                                    "port",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "fortiswitch_id": {
+                                        "type": "string",
+                                        "title": "FortiSwitch Serial",
+                                        "description": "Serial number of the FortiSwitch that the module is connected to."
+                                    },
+                                    "port": {
+                                        "type": "string",
+                                        "title": "FortiSwitch Port",
+                                        "description": "FortiSwitch port that the transceiver module is connected to."
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "title": "Status",
+                                        "description": "Link status of the transceiver module."
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "title": "Module Type",
+                                        "description": "Type of transceiver module."
+                                    },
+                                    "vendor": {
+                                        "type": "string",
+                                        "title": "Vendor Name",
+                                        "description": "Name of the vendor for the transceiver module."
+                                    },
+                                    "vendor_part_number": {
+                                        "type": "string",
+                                        "title": "Module Vendor Part Number",
+                                        "description": "Vendor part number for the transceiver module."
+                                    },
+                                    "vendor_serial_number": {
+                                        "type": "string",
+                                        "title": "Module Vendor Serial Number",
+                                        "description": "Vendor serial number for the transceiver module."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/health": {
+            "get": {
+                "summary": "Retrieve health-check statistics for managed FortiSwitches.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "Filter: FortiSwitch ID.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/cable-status": {
+            "get": {
+                "summary": "Diagnose cable information for a port. Virtual FortiSwitches and FortiLink ports are not supported.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Cable Test Statistics",
+                            "description": "Retrieve cable test statistics for managed FortiSwitches.",
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "title": "Connection Type",
+                                    "description": "Type of connection."
+                                },
+                                "port": {
+                                    "type": "string",
+                                    "title": "Port Name",
+                                    "description": "Name of the FortiSwitch port."
+                                },
+                                "error_range": {
+                                    "type": "integer",
+                                    "title": "Margin of Error",
+                                    "description": "Estimated margin of error in the given unit of measurement."
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "title": "Unit of Measurement",
+                                    "description": "Standard of measurement for numerical values."
+                                },
+                                "pairs": {
+                                    "type": "array",
+                                    "title": "Pair List",
+                                    "description": "List of twisted pairs.",
+                                    "items": {
+                                        "title": "Twisted Pair Details",
+                                        "description": "Details of the twisted pair.",
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "title": "Pair Name",
+                                                "description": "Name assigned to the pair."
+                                            },
+                                            "state": {
+                                                "type": "string",
+                                                "title": "State",
+                                                "description": "State of the pair."
+                                            },
+                                            "length": {
+                                                "type": "integer",
+                                                "title": "Length",
+                                                "description": "Length of the pair."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "Name of managed FortiSwitch.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "port",
+                        "in": "query",
+                        "description": "Name of managed FortiSwitch port.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/managed-switch\/models": {
+            "get": {
+                "summary": "Retrieve a list of FortiSwitch models that may be pre-configured.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Pre-Provisioning Supported FortiSwitch Models",
+                            "description": "Retrieve a list of FortiSwitch models that may be pre-configured.",
+                            "type": "array",
+                            "items": {
+                                "title": "FortiSwitch Model",
+                                "description": "Prefix and full model name of a FortiSwitch model.",
+                                "type": "object",
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "title": "FortiSwitch Model Prefix",
+                                        "description": "A 6-character code assigned to a FortiSwitch.",
+                                        "type": "string"
+                                    },
+                                    "full_name": {
+                                        "title": "FortiSwitch Model Name",
+                                        "description": "Full model name of a FortiSwitch model.",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/fsw-firmware": {
+            "get": {
+                "summary": "Retrieve a list of recommended firmware for managed FortiSwitches.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "FortiSwitch Firmware",
+                            "description": "Retrieve a list of current and recommended firmware for FortiSwitches in use.",
+                            "type": "object",
+                            "additionalProperties": {
+                                "anyOf": [
+                                    {
+                                        "type": "object",
+                                        "description": "List of FortiSwitches and corresponding firmware.",
+                                        "title": "FortiSwitches Models",
+                                        "properties": {
+                                            "model": {
+                                                "$ref": "#\/definitions\/switch-controller--fsw-firmware--select--definitions--model"
+                                            },
+                                            "major": {
+                                                "$ref": "#\/definitions\/switch-controller--fsw-firmware--select--definitions--major"
+                                            },
+                                            "minor": {
+                                                "$ref": "#\/definitions\/switch-controller--fsw-firmware--select--definitions--minor"
+                                            },
+                                            "patch": {
+                                                "$ref": "#\/definitions\/switch-controller--fsw-firmware--select--definitions--patch"
+                                            },
+                                            "build": {
+                                                "$ref": "#\/definitions\/switch-controller--fsw-firmware--select--definitions--build"
+                                            },
+                                            "image_id": {
+                                                "$ref": "#\/definitions\/switch-controller--fsw-firmware--select--definitions--image_id"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "type": "object",
+                                        "description": "List of FortiSwitches and corresponding firmware errors.",
+                                        "title": "FortiSwitches Errors",
+                                        "properties": {
+                                            "model": {
+                                                "$ref": "#\/definitions\/switch-controller--fsw-firmware--select--definitions--model"
+                                            },
+                                            "error": {
+                                                "$ref": "#\/definitions\/switch-controller--fsw-firmware--select--definitions--error"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "Filter: FortiSwitch ID.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "timeout",
+                        "in": "query",
+                        "description": "FortiGuard connection timeout (defaults to 3 seconds).",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "version",
+                        "in": "query",
+                        "description": "Target firmware version of the parent FortiGate.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/fsw-firmware\/download": {
+            "post": {
+                "summary": "Download FortiSwitch firmware from FortiGuard to the FortiGate according to FortiSwitch image ID.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "image_id": {
+                                    "description": "FortiSwitch image ID.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/fsw-firmware\/push": {
+            "post": {
+                "summary": "Push FortiSwitch firmware to the given device.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "serial": {
+                                    "description": "The target device's serial.",
+                                    "type": "string"
+                                },
+                                "image_id": {
+                                    "description": "FortiSwitch image ID.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/fsw-firmware\/upload": {
+            "post": {
+                "summary": "Upload FortiSwitch firmware to the management FortiGate and then push to target FortiSwitches.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "serials": {
+                                    "description": "The target device's serial.",
+                                    "type": "string"
+                                },
+                                "file_content": {
+                                    "description": "Provided when uploading a file: base64 encoded file data. Must not contain whitespace or other invalid base64 characters. Must be included in HTTP body.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/detected-device": {
+            "get": {
+                "summary": "Retrieve a list of devices detected on all switches.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/validate-switch-prefix": {
+            "get": {
+                "summary": "Validate a FortiSwitch serial number prefix. Deprecated in 7.2 replaced by \/api\/v2\/monitor\/switch-controller\/managed-switch\/models.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Validate FortiSwitch Prefix",
+                            "description": "Validate a FortiSwitch serial number prefix.",
+                            "type": "object",
+                            "deprecated": true,
+                            "x-scheduledRemoval": {
+                                "major": 7,
+                                "minor": 2
+                            },
+                            "properties": {
+                                "valid": {
+                                    "type": "boolean",
+                                    "title": "Valid",
+                                    "description": "True when the FortiSwitch prefix is valid."
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "prefix",
+                        "in": "query",
+                        "description": "Prefix of FortiSwitch serial number.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/mclag-icl\/eligible-peer": {
+            "get": {
+                "summary": "Find a pair of FortiSwitches that are eligible to form a tier-1 MCLAG.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Tier-1 MC-LAG Candidate",
+                            "description": "Retrieve candidates to form tier-1 MC-LAG.",
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "enum": [
+                                        "success",
+                                        "not_found",
+                                        "mclag_present",
+                                        "invalid_param",
+                                        "unknown"
+                                    ],
+                                    "title": "Status",
+                                    "description": "Status of MC-LAG candidate search."
+                                },
+                                "candidate1": {
+                                    "type": "string",
+                                    "title": "Candidate 1",
+                                    "description": "FortiSwitch serial of candidate 1."
+                                },
+                                "candidate2": {
+                                    "type": "string",
+                                    "title": "Candidate 2",
+                                    "description": "FortiSwitch serial of candidate 2."
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "fortilink",
+                        "in": "query",
+                        "description": "FortiLink interface name.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        },
+        "\/switch-controller\/matched-devices": {
+            "get": {
+                "summary": "Return a list of devices that match NAC and\/or dynamic port policies.\nAccess Group: wifi",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Matched Devices",
+                            "description": "List devices that match NAC and dynamic port policy.",
+                            "type": "array",
+                            "items": {
+                                "title": "Device Entry",
+                                "description": "Details of the device.",
+                                "type": "object",
+                                "required": [
+                                    "mac"
+                                ],
+                                "properties": {
+                                    "mac": {
+                                        "type": "string",
+                                        "title": "MAC",
+                                        "description": "The MAC address of the device."
+                                    },
+                                    "last_known_switch": {
+                                        "type": "string",
+                                        "title": "Last Known Switch",
+                                        "description": "The last known switch the device was connected to."
+                                    },
+                                    "last_known_port": {
+                                        "type": "string",
+                                        "title": "Last Known Port",
+                                        "description": "The last known port the device was connected to."
+                                    },
+                                    "matched_nac_policy": {
+                                        "type": "string",
+                                        "title": "Matched NAC Policy",
+                                        "description": "The NAC policy that matches the device."
+                                    },
+                                    "matched_dynamic_port_policy": {
+                                        "type": "string",
+                                        "title": "Matched Dynamic Port Policy",
+                                        "description": "Matched dynamic port policy that matches the devices."
+                                    },
+                                    "mac_policy": {
+                                        "type": "string",
+                                        "title": "MAC Policy",
+                                        "description": "MAC policy that matches the device."
+                                    },
+                                    "matched_policy": {
+                                        "type": "string",
+                                        "title": "Matched Policy",
+                                        "description": "Policy that matches the device for dynamic port policy."
+                                    },
+                                    "is_dynamic": {
+                                        "type": "boolean",
+                                        "title": "Dynamic Port Policy",
+                                        "description": "True if this is a device that matches a dynamic port policy."
+                                    },
+                                    "is_nac": {
+                                        "type": "boolean",
+                                        "title": "NAC Policy",
+                                        "description": "True if this is a device that matches a NAC policy."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "mkey",
+                        "in": "query",
+                        "description": "FortiSwitch ID. Will return all devices if no ID is provided.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "include_dynamic",
+                        "in": "query",
+                        "description": "If true, include devices that match dynamic port policies. Default value is false.",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "tags": [
+                    "switch-controller"
+                ]
+            }
+        }
+    }
+}

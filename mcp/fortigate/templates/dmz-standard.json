@@ -1,0 +1,66 @@
+{
+  "name": "dmz-standard",
+  "description": "Standard DMZ setup: interface, VLAN, address, policy, and NAT",
+  "parameters": {
+    "interface": { "type": "string", "required": true, "description": "Physical interface (e.g., port3)" },
+    "vlan_id": { "type": "number", "required": false, "description": "VLAN ID (optional)" },
+    "dmz_ip": { "type": "string", "required": true, "description": "DMZ interface IP (e.g., 10.0.3.1/24)" },
+    "server_ip": { "type": "string", "required": true, "description": "DMZ server IP (e.g., 10.0.3.10)" },
+    "wan_interface": { "type": "string", "required": true, "description": "WAN interface name" }
+  },
+  "steps": [
+    {
+      "tool": "fortios_system_interface",
+      "operation": "create",
+      "data": {
+        "name": "{{interface}}",
+        "ip": "{{dmz_ip}}",
+        "type": "vlan",
+        "vlanid": "{{vlan_id}}",
+        "role": "dmz",
+        "allowaccess": "ping https ssh"
+      }
+    },
+    {
+      "tool": "fortios_firewall_address",
+      "operation": "create",
+      "data": {
+        "name": "DMZ-SERVER",
+        "subnet": "{{server_ip}}/32",
+        "type": "ipmask"
+      }
+    },
+    {
+      "tool": "fortios_firewall_policy",
+      "operation": "create",
+      "data": {
+        "name": "WAN-to-DMZ",
+        "srcintf": [{"name": "{{wan_interface}}"}],
+        "dstintf": [{"name": "{{interface}}"}],
+        "srcaddr": [{"name": "all"}],
+        "dstaddr": [{"name": "DMZ-SERVER"}],
+        "action": "accept",
+        "schedule": "always",
+        "service": [{"name": "HTTP"}, {"name": "HTTPS"}],
+        "nat": "enable",
+        "logtraffic": "all"
+      }
+    },
+    {
+      "tool": "fortios_firewall_policy",
+      "operation": "create",
+      "data": {
+        "name": "DMZ-to-WAN",
+        "srcintf": [{"name": "{{interface}}"}],
+        "dstintf": [{"name": "{{wan_interface}}"}],
+        "srcaddr": [{"name": "DMZ-SERVER"}],
+        "dstaddr": [{"name": "all"}],
+        "action": "accept",
+        "schedule": "always",
+        "service": [{"name": "ALL"}],
+        "nat": "enable",
+        "logtraffic": "all"
+      }
+    }
+  ]
+}

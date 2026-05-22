@@ -1,0 +1,392 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http:\/\/fortinet.com\/terms\/",
+        "version": "v2",
+        "contact": {
+            "url": "http:\/\/modskristensen.net",
+            "name": "FortiOS Web Application Team",
+            "email": "fosguiqateam@fortinet.com"
+        },
+        "description": "REST API for configuring FortiOS objects and settings",
+        "title": "FortiOS Monitor"
+    },
+    "host": "172.16.177.65",
+    "basePath": "\/api\/v2\/monitor",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application\/json"
+    ],
+    "produces": [
+        "application\/json"
+    ],
+    "securityDefinitions": {
+        "APIKeyQueryParam": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "APIKeyQueryParam": []
+        }
+    ],
+    "paths": {
+        "\/utm\/rating-lookup\/select": {
+            "post": {
+                "summary": "Lookup FortiGuard rating for a specific URL.\nAccess Group: utmgrp.webfilter",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "url": {
+                                    "description": "List of URLs to query.",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "lang": {
+                                    "description": "Language for the rating response.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "utm"
+                ]
+            }
+        },
+        "\/utm\/app-lookup": {
+            "get": {
+                "summary": "Query remote FortiFlow database to resolve hosts to application control entries.\nAccess Group: any",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hosts",
+                        "in": "query",
+                        "description": "List of hosts to resolve.",
+                        "required": false,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "utm"
+                ]
+            }
+        },
+        "\/utm\/application-categories": {
+            "get": {
+                "summary": "Retrieve a list of application control categories.\nAccess Group: any",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Application Control Categories",
+                            "description": "List of application control categories.",
+                            "type": "array",
+                            "items": {
+                                "title": "Application Control Category",
+                                "description": "An application control category.",
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "title": "Category Name",
+                                        "description": "Application control category name.",
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "title": "Category ID",
+                                        "description": "Application control category ID.",
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "utm"
+                ]
+            }
+        },
+        "\/utm\/antivirus\/stats": {
+            "get": {
+                "summary": "Retrieve antivirus scanning statistics.\nAccess Group: utmgrp.antivirus",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "utm"
+                ]
+            }
+        },
+        "\/utm\/blacklisted-certificates": {
+            "get": {
+                "summary": "Retrieve a list of blacklisted SSL certificates.\nAccess Group: fwgrp.others",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Blocked SSL Certificates",
+                            "description": "Retrieve a list of blocked SSL certificates.",
+                            "type": "array",
+                            "items": {
+                                "title": "Blocked SSL Certificate",
+                                "description": "A blocked SSL certificate.",
+                                "type": "object",
+                                "required": [
+                                    "listing_date",
+                                    "hash",
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "listing_date": {
+                                        "type": "integer",
+                                        "title": "Listing Date",
+                                        "description": "Date when this certificate was added to the blocklist, in UTC."
+                                    },
+                                    "hash": {
+                                        "type": "string",
+                                        "title": "Certificate Hash",
+                                        "description": "SHA1 fingerprint for the certificate."
+                                    },
+                                    "common_name": {
+                                        "type": "string",
+                                        "title": "Common Name",
+                                        "description": "Common name of the certificate."
+                                    },
+                                    "reason": {
+                                        "type": "string",
+                                        "title": "Listing Reason",
+                                        "description": "Reason why this certificate is blocked."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "utm"
+                ]
+            }
+        },
+        "\/utm\/blacklisted-certificates\/statistics": {
+            "get": {
+                "summary": "Retrieve blacklisted SSL certificates statistics.\nAccess Group: fwgrp.others",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Blocked SSL Certificate Statistics",
+                            "description": "Retrieve blocked SSL certificate statistics.",
+                            "type": "object",
+                            "required": [
+                                "count"
+                            ],
+                            "properties": {
+                                "count": {
+                                    "type": "integer",
+                                    "title": "Certificate Count",
+                                    "description": "Number of blocked SSL certificates."
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "utm"
+                ]
+            }
+        }
+    }
+}

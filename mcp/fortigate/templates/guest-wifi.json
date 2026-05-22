@@ -1,0 +1,52 @@
+{
+  "name": "guest-wifi",
+  "description": "Guest WiFi with captive portal and restrictive policy",
+  "parameters": {
+    "ssid": { "type": "string", "required": true, "description": "WiFi SSID name" },
+    "interface": { "type": "string", "required": true, "description": "WiFi interface (e.g., wlan)" },
+    "vlan_id": { "type": "number", "required": true, "description": "Guest VLAN ID" },
+    "subnet": { "type": "string", "required": true, "description": "Guest subnet (e.g., 192.168.100.0/24)" },
+    "wan_interface": { "type": "string", "required": true, "description": "WAN interface for NAT" }
+  },
+  "steps": [
+    {
+      "tool": "fortios_system_interface",
+      "operation": "create",
+      "data": {
+        "name": "GUEST-WIFI",
+        "ip": "{{subnet}}",
+        "type": "vlan",
+        "vlanid": "{{vlan_id}}",
+        "interface": "{{interface}}",
+        "role": "lan",
+        "allowaccess": "ping"
+      }
+    },
+    {
+      "tool": "fortios_firewall_address",
+      "operation": "create",
+      "data": {
+        "name": "GUEST-NETWORK",
+        "subnet": "{{subnet}}",
+        "type": "ipmask"
+      }
+    },
+    {
+      "tool": "fortios_firewall_policy",
+      "operation": "create",
+      "data": {
+        "name": "Guest-Internet-Only",
+        "srcintf": [{"name": "GUEST-WIFI"}],
+        "dstintf": [{"name": "{{wan_interface}}"}],
+        "srcaddr": [{"name": "GUEST-NETWORK"}],
+        "dstaddr": [{"name": "all"}],
+        "action": "accept",
+        "schedule": "always",
+        "service": [{"name": "HTTP"}, {"name": "HTTPS"}, {"name": "DNS"}],
+        "nat": "enable",
+        "captive-portal": "enable",
+        "logtraffic": "all"
+      }
+    }
+  ]
+}

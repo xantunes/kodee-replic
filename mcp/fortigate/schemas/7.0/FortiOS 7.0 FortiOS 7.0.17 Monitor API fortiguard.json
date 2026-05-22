@@ -1,0 +1,512 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http:\/\/fortinet.com\/terms\/",
+        "version": "v2",
+        "contact": {
+            "url": "http:\/\/modskristensen.net",
+            "name": "FortiOS Web Application Team",
+            "email": "fosguiqateam@fortinet.com"
+        },
+        "description": "REST API for configuring FortiOS objects and settings",
+        "title": "FortiOS Monitor"
+    },
+    "host": "172.16.177.65",
+    "basePath": "\/api\/v2\/monitor",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application\/json"
+    ],
+    "produces": [
+        "application\/json"
+    ],
+    "securityDefinitions": {
+        "APIKeyQueryParam": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "APIKeyQueryParam": []
+        }
+    ],
+    "paths": {
+        "\/fortiguard\/redirect-portal": {
+            "get": {
+                "summary": "Retrieve the FortiGuard redirect portal IP.\nAccess Group: any",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "fortiguard"
+                ]
+            }
+        },
+        "\/fortiguard\/service-communication-stats": {
+            "get": {
+                "summary": "Retrieve historical statistics for communication with FortiGuard services.\nAccess Group: sysgrp.mnt",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "FortiGuard Service Communication Statistics",
+                            "description": "Retrieve historical statistics for communication with FortiGuard services.",
+                            "type": "object",
+                            "properties": {
+                                "forticare": {
+                                    "title": "FortiCare Statistics",
+                                    "description": "FortiCare statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "fortiguard_download": {
+                                    "title": "FortiGuard Download Statistics",
+                                    "description": "FortiGuard download statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "fortiguard_query": {
+                                    "title": "FortiGuard Query Statistics",
+                                    "description": "FortiGuard query statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "forticloud_log": {
+                                    "title": "FortiCloud Log Statistics",
+                                    "description": "FortiCloud log statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "fortisandbox_cloud": {
+                                    "title": "FortiSandbox Cloud Statistics",
+                                    "description": "FortiSandbox cloud statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "fortiguard.com": {
+                                    "title": "Fortiguard.com Statistics",
+                                    "description": "Statistics from fortiguard.com.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "ocvpn": {
+                                    "title": "OCVPN Statistics",
+                                    "description": "OCVPN statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "sdns": {
+                                    "title": "SDNS Statistics",
+                                    "description": "SDNS statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "fortitoken_registration": {
+                                    "title": "FortiToken Registration Statistics",
+                                    "description": "FortiToken registration statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                },
+                                "sms_service": {
+                                    "title": "SMS Service Statistics",
+                                    "description": "SMS service statistics.",
+                                    "type": "object",
+                                    "properties": {
+                                        "1_week": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Week",
+                                            "description": "Statistics in the last week.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "1_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last Hour",
+                                            "description": "Statistics in the last hour.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "24_hour": {
+                                            "type": "array",
+                                            "title": "Statistics in the Last 24 Hours",
+                                            "description": "Statistics in the last 24 hours.",
+                                            "items": {
+                                                "title": "One Statistic",
+                                                "description": "One statistic.",
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "service_type",
+                        "in": "query",
+                        "description": "To get stats for [forticare|fortiguard_download|fortiguard_query|forticloud_log|fortisandbox_cloud|fortiguard.com|ocvpn|sdns|fortitoken_registration|sms_service]. Defaults to all stats if not provided.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "timeslot",
+                        "in": "query",
+                        "description": "History timeslot of stats [1_hour|24_hour|1_week]. Defaults to all timeslots if not provided.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "fortiguard"
+                ]
+            }
+        }
+    }
+}

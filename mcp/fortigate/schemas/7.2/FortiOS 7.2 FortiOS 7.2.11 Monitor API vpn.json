@@ -1,0 +1,988 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http:\/\/fortinet.com\/terms\/",
+        "version": "v2",
+        "contact": {
+            "url": "http:\/\/modskristensen.net",
+            "name": "FortiOS Web Application Team",
+            "email": "fosguiqateam@fortinet.com"
+        },
+        "description": "REST API for configuring FortiOS objects and settings",
+        "title": "FortiOS Monitor"
+    },
+    "host": "172.16.177.65",
+    "basePath": "\/api\/v2\/monitor",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application\/json"
+    ],
+    "produces": [
+        "application\/json"
+    ],
+    "securityDefinitions": {
+        "APIKeyQueryParam": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "APIKeyQueryParam": []
+        }
+    ],
+    "paths": {
+        "\/vpn\/ike\/clear": {
+            "post": {
+                "summary": "Clear IKE gateways.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "mkey": {
+                                    "description": "Name of the IKE gateway to clear.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ipsec": {
+            "get": {
+                "summary": "Return an array of active IPsec VPNs.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "tunnel",
+                        "in": "query",
+                        "description": "Filter for a specific IPsec tunnel name.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ipsec\/tunnel_up": {
+            "post": {
+                "summary": "Bring up a specific IPsec VPN tunnel.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "p1name": {
+                                    "description": "IPsec phase1 name.",
+                                    "type": "string"
+                                },
+                                "p2name": {
+                                    "description": "IPsec phase2 name.",
+                                    "type": "string"
+                                },
+                                "p2serial": {
+                                    "description": "IPsec phase2 serial.",
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ipsec\/tunnel_down": {
+            "post": {
+                "summary": "Bring down a specific IPsec VPN tunnel.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "p1name": {
+                                    "description": "IPsec phase1 name.",
+                                    "type": "string"
+                                },
+                                "p2name": {
+                                    "description": "IPsec phase2 name.",
+                                    "type": "string"
+                                },
+                                "p2serial": {
+                                    "description": "IPsec phase2 serial.",
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ipsec\/tunnel_reset_stats": {
+            "post": {
+                "summary": "Reset statistics for a specific IPsec VPN tunnel.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "p1name": {
+                                    "description": "IPsec phase1 name.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ocvpn\/members": {
+            "get": {
+                "summary": "Get information on devices registered in the Overlay Controller VPN cloud assisted group.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ocvpn\/status": {
+            "get": {
+                "summary": "Get the last status message from FortiCloud Overlay Controller VPN cloud service.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ocvpn\/meta": {
+            "get": {
+                "summary": "Get meta information (e.g. licenses and registered members) from Overlay Controller VPN cloud service.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ssl": {
+            "get": {
+                "summary": "Retrieve a list of all SSL-VPN sessions and sub-sessions.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "SSL-VPN Sessions and Sub-Sessions",
+                            "description": "List all SSL-VPN sessions and sub-sessions.",
+                            "type": "array",
+                            "items": {
+                                "title": "SSL-VPN Session",
+                                "description": "An SSL-VPN session.",
+                                "type": "object",
+                                "required": [
+                                    "index",
+                                    "last_login_timestamp",
+                                    "interface",
+                                    "subsessions",
+                                    "duration",
+                                    "two_factor_auth"
+                                ],
+                                "properties": {
+                                    "index": {
+                                        "type": "integer",
+                                        "title": "Index",
+                                        "description": "Session index."
+                                    },
+                                    "user_name": {
+                                        "type": "string",
+                                        "title": "User Name",
+                                        "description": "Name of the user."
+                                    },
+                                    "remote_host": {
+                                        "type": "string",
+                                        "title": "Remote Host",
+                                        "description": "IP address of the remote host."
+                                    },
+                                    "last_login_timestamp": {
+                                        "type": "integer",
+                                        "title": "Last Login Timestamp",
+                                        "description": "Last login timestamp, in seconds."
+                                    },
+                                    "interface": {
+                                        "type": "string",
+                                        "title": "Interface Name",
+                                        "description": "Interface Name."
+                                    },
+                                    "duration": {
+                                        "type": "integer",
+                                        "title": "Duration",
+                                        "description": "Connection duration, in seconds."
+                                    },
+                                    "two_factor_auth": {
+                                        "type": "boolean",
+                                        "title": "Two-Factor Authentication",
+                                        "description": "True when the user is using two-factor authentication."
+                                    },
+                                    "subsessions": {
+                                        "title": "SSL-VPN Sub-Sessions Data",
+                                        "description": "List of SSL-VPN sub-sessions.",
+                                        "type": "array",
+                                        "items": {
+                                            "title": "SSL-VPN Sub-Session Data",
+                                            "description": "Sub-session data.",
+                                            "type": "object",
+                                            "required": [
+                                                "index",
+                                                "parent_index",
+                                                "mode",
+                                                "type",
+                                                "desthost"
+                                            ],
+                                            "properties": {
+                                                "index": {
+                                                    "type": "integer",
+                                                    "title": "Index",
+                                                    "description": "Sub-Session index."
+                                                },
+                                                "parent_index": {
+                                                    "type": "integer",
+                                                    "title": "Parent Session Index",
+                                                    "description": "Parent session index."
+                                                },
+                                                "mode": {
+                                                    "type": "string",
+                                                    "title": "Client Mode",
+                                                    "description": "Client mode.",
+                                                    "enum": [
+                                                        "Any",
+                                                        "Web",
+                                                        "Port Forward",
+                                                        "Tunnel",
+                                                        "Unknown"
+                                                    ]
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "title": "Sub-Session Type",
+                                                    "description": "Sub-session type.",
+                                                    "enum": [
+                                                        "HTTP\/HTTPS",
+                                                        "Telnet",
+                                                        "SSH",
+                                                        "FTP",
+                                                        "NFS",
+                                                        "SMB",
+                                                        "VNC",
+                                                        "RDP",
+                                                        "Ping",
+                                                        "Citrix",
+                                                        "Port Forward",
+                                                        "Unknown"
+                                                    ]
+                                                },
+                                                "aip": {
+                                                    "type": "string",
+                                                    "title": "IP Address",
+                                                    "description": "IP address of tunnel."
+                                                },
+                                                "aipv6": {
+                                                    "type": "string",
+                                                    "title": "IP Address",
+                                                    "description": "IP address of tunnel."
+                                                },
+                                                "in_bytes": {
+                                                    "type": "integer",
+                                                    "title": "Incoming Bytes",
+                                                    "description": "Incoming data size, in bytes."
+                                                },
+                                                "out_bytes": {
+                                                    "type": "integer",
+                                                    "title": "Outgoing Bytes",
+                                                    "description": "Outgoing data size, in bytes."
+                                                },
+                                                "desthost": {
+                                                    "type": "string",
+                                                    "title": "Destination Host",
+                                                    "description": "Destination host."
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "subsession_type": {
+                                        "type": "string",
+                                        "title": "Sub-Session Type",
+                                        "description": "Sub-session type.",
+                                        "enum": [
+                                            "HTTP\/HTTPS",
+                                            "Telnet",
+                                            "SSH",
+                                            "FTP",
+                                            "NFS",
+                                            "SMB",
+                                            "VNC",
+                                            "RDP",
+                                            "Ping",
+                                            "Citrix",
+                                            "Port Forward",
+                                            "Unknown"
+                                        ]
+                                    },
+                                    "subsession_desc": {
+                                        "type": "string",
+                                        "title": "Sub-Session Description",
+                                        "description": "Sub-session description."
+                                    }
+                                },
+                                "additionalProperties": true
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ssl\/clear_tunnel": {
+            "post": {
+                "summary": "Remove all active tunnel sessions in current virtual domain.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ssl\/delete": {
+            "post": {
+                "summary": "Terminate the provided SSL-VPN session.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "type": {
+                                    "description": "The session type [websession|subsession].",
+                                    "type": "string"
+                                },
+                                "index": {
+                                    "description": "The session index.",
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ssl\/stats": {
+            "get": {
+                "summary": "Return statistics about the SSL-VPN.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "vpn"
+                ]
+            }
+        },
+        "\/vpn\/ssl\/provision-user": {
+            "post": {
+                "summary": "Provision SSL-VPN users with target applications. The provisioning message (email or SMS) is sent with no confirmation of success.\nAccess Group: vpngrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "Provision SSL-VPN Users",
+                            "description": "Provision SSL-VPN users with target applications. The provisioning message (email or SMS) is sent with no confirmation of success.",
+                            "type": "object",
+                            "required": [
+                                "host",
+                                "port",
+                                "vpn_name"
+                            ],
+                            "properties": {
+                                "host": {
+                                    "type": "string",
+                                    "title": "Hostname\/IP Address",
+                                    "description": "The hostname\/IP address of the VPN server."
+                                },
+                                "port": {
+                                    "type": "integer",
+                                    "title": "Server Port",
+                                    "description": "The port of the VPN server."
+                                },
+                                "vpn_name": {
+                                    "type": "string",
+                                    "title": "VPN Name",
+                                    "description": "The name of the VPN configuration."
+                                },
+                                "method": {
+                                    "type": "string",
+                                    "title": "Provision Method",
+                                    "description": "Method to send provision message.",
+                                    "enum": [
+                                        "email",
+                                        "sms"
+                                    ]
+                                },
+                                "email_list": {
+                                    "anyOf": [
+                                        {
+                                            "title": "Email Address",
+                                            "description": "The email address that the VPN configuration message should be sent to.",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "title": "Email Addresses",
+                                            "description": "The list of email addresses that the VPN configuration message should be sent to.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "title": "Email Address",
+                                                "description": "The email address that the VPN configuration message should be sent to."
+                                            }
+                                        }
+                                    ]
+                                },
+                                "phone_user_list": {
+                                    "anyOf": [
+                                        {
+                                            "title": "User",
+                                            "description": "The user that the VPN configuration SMS should be sent to.",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "title": "Users",
+                                            "description": "The list of users that the VPN configuration SMS should be sent to.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "title": "User",
+                                                "description": "The user that the VPN configuration SMS should be sent to."
+                                            }
+                                        }
+                                    ]
+                                },
+                                "phone_number_list": {
+                                    "anyOf": [
+                                        {
+                                            "title": "Phone Number",
+                                            "description": "The phone number that the VPN configuration SMS should be sent to.",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "title": "Phone Numbers",
+                                            "description": "The list of phone numbers that the VPN configuration SMS should be sent to.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "title": "Phone Number",
+                                                "description": "The phone number that the VPN configuration SMS should be sent to."
+                                            }
+                                        }
+                                    ]
+                                },
+                                "sms_method": {
+                                    "type": "string",
+                                    "title": "SMS Send Method",
+                                    "description": "The method to be used for sending the SMS.",
+                                    "enum": [
+                                        "fortiguard",
+                                        "custom"
+                                    ]
+                                },
+                                "sms_server": {
+                                    "type": "string",
+                                    "title": "SMS Server",
+                                    "description": "The SMS server to be used for sending SMS messages. Required if the \"custom\" SMS method is chosen."
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "host": {
+                                    "description": "The hostname\/IP address of the VPN server.",
+                                    "type": "string"
+                                },
+                                "port": {
+                                    "description": "The port of the VPN server.",
+                                    "type": "integer"
+                                },
+                                "vpn_name": {
+                                    "description": "The name of the VPN configuration.",
+                                    "type": "string"
+                                },
+                                "method": {
+                                    "description": "Method to send [email|sms]. If not set, email will be the default.",
+                                    "type": "string"
+                                },
+                                "email_list": {
+                                    "description": "The email address that the VPN configuration message should be sent to. Required if \"method\" is \"email\".",
+                                    "type": "string"
+                                },
+                                "phone_user_list": {
+                                    "description": "The user that the VPN configuration SMS should be sent to. At least one of \"phone_user_list\" or \"phone_number_list\" is required if \"method\" is \"sms\".",
+                                    "type": "string"
+                                },
+                                "phone_number_list": {
+                                    "description": "The phone number that the VPN configuration SMS should be sent to. At least one of \"phone_user_list\" or \"phone_number_list\" is required if \"method\" is \"sms\".",
+                                    "type": "string"
+                                },
+                                "sms_method": {
+                                    "description": "The method to be used for sending the SMS [fortiguard|custom]. Default is \"fortiguard\".",
+                                    "type": "string"
+                                },
+                                "sms_server": {
+                                    "description": "The SMS server to be used for sending SMS messages, required if \"custom\" SMS method is chosen.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "vpn"
+                ]
+            }
+        }
+    }
+}

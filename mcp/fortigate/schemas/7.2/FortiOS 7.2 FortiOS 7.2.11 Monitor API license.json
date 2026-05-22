@@ -1,0 +1,679 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http:\/\/fortinet.com\/terms\/",
+        "version": "v2",
+        "contact": {
+            "url": "http:\/\/modskristensen.net",
+            "name": "FortiOS Web Application Team",
+            "email": "fosguiqateam@fortinet.com"
+        },
+        "description": "REST API for configuring FortiOS objects and settings",
+        "title": "FortiOS Monitor"
+    },
+    "host": "172.16.177.65",
+    "basePath": "\/api\/v2\/monitor",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application\/json"
+    ],
+    "produces": [
+        "application\/json"
+    ],
+    "securityDefinitions": {
+        "APIKeyQueryParam": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "APIKeyQueryParam": []
+        }
+    ],
+    "definitions": {
+        "license--status--select--definitions--version": {
+            "type": "string",
+            "title": "Version",
+            "description": "Feature version."
+        },
+        "license--status--select--definitions--expires": {
+            "type": "number",
+            "title": "License Expiry",
+            "description": "Timestamp of when license will expire."
+        },
+        "license--status--select--definitions--entitlement_status": {
+            "type": "object",
+            "title": "Entitlement Status",
+            "description": "Entitlement status information.",
+            "required": [
+                "status",
+                "support_level"
+            ],
+            "properties": {
+                "status": {
+                    "$ref": "#\/definitions\/license--status--select--definitions--status"
+                },
+                "support_level": {
+                    "type": "string",
+                    "title": "Support Level",
+                    "description": "Support level of the license.",
+                    "enum": [
+                        "Return To Factory",
+                        "Advanced HW",
+                        "Web\/Online",
+                        "24x7 ND HW",
+                        "24x7x4 Courier HW",
+                        "24x7x4 On Site HW",
+                        "8x5",
+                        "24x7",
+                        "unknown"
+                    ]
+                },
+                "expires": {
+                    "$ref": "#\/definitions\/license--status--select--definitions--expires"
+                }
+            }
+        },
+        "license--status--select--definitions--last_update_result_status": {
+            "type": "string",
+            "title": "Last Update Result Status",
+            "description": "Status of last attempt to update license."
+        },
+        "license--status--select--definitions--last_update_attempt": {
+            "type": "number",
+            "title": "Last Update Attempt",
+            "description": "Timestamp of when last attempt was made to update license."
+        },
+        "license--status--select--definitions--status": {
+            "type": "string",
+            "title": "License Status",
+            "description": "License status."
+        },
+        "license--status--select--definitions--entitlement": {
+            "type": "string",
+            "title": "Entitlement",
+            "description": "License entitlement."
+        },
+        "license--status--select--definitions--last_update": {
+            "type": "number",
+            "title": "Last Update",
+            "description": "Timestamp of when license was last updated."
+        },
+        "license--status--select--definitions--type": {
+            "type": "string",
+            "title": "License Type",
+            "description": "License type."
+        },
+        "license--status--select--definitions--engine": {
+            "type": "object",
+            "title": "Engine",
+            "description": "Engine used by feature.",
+            "properties": {
+                "version": {
+                    "$ref": "#\/definitions\/license--status--select--definitions--version"
+                },
+                "last_update": {
+                    "$ref": "#\/definitions\/license--status--select--definitions--last_update"
+                },
+                "last_update_attempt": {
+                    "$ref": "#\/definitions\/license--status--select--definitions--last_update_attempt"
+                },
+                "last_update_result_status": {
+                    "$ref": "#\/definitions\/license--status--select--definitions--last_update_result_status"
+                },
+                "last_update_method_status": {
+                    "$ref": "#\/definitions\/license--status--select--definitions--last_update_method_status"
+                }
+            }
+        },
+        "license--status--select--definitions--db_status": {
+            "type": "string",
+            "title": "Database Status",
+            "description": "Database status."
+        },
+        "license--status--select--definitions--last_update_method_status": {
+            "type": "string",
+            "title": "Last Update Method",
+            "description": "Method which caused last update of license."
+        }
+    },
+    "paths": {
+        "\/license\/status": {
+            "get": {
+                "summary": "Get current license & registration status.\nAccess Group: any",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "type": "object",
+                            "title": "License Status",
+                            "description": "License status of FortiOS features and services.",
+                            "required": [
+                                "antivirus",
+                                "appctrl",
+                                "forticare",
+                                "ips"
+                            ],
+                            "additionalProperties": true,
+                            "properties": {
+                                "antivirus": {
+                                    "type": "object",
+                                    "title": "AntiVirus",
+                                    "description": "AntiVirus license status.",
+                                    "properties": {
+                                        "type": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--type"
+                                        },
+                                        "status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--status"
+                                        },
+                                        "version": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--version"
+                                        },
+                                        "expires": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--expires"
+                                        },
+                                        "entitlement": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--entitlement"
+                                        },
+                                        "last_update": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update"
+                                        },
+                                        "last_update_attempt": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_attempt"
+                                        },
+                                        "last_update_result_status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_result_status"
+                                        },
+                                        "last_update_method_status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_method_status"
+                                        },
+                                        "db_status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--db_status"
+                                        },
+                                        "engine": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--engine"
+                                        }
+                                    }
+                                },
+                                "appctrl": {
+                                    "type": "object",
+                                    "title": "Application Control",
+                                    "description": "Application Control license status.",
+                                    "properties": {
+                                        "type": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--type"
+                                        },
+                                        "status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--status"
+                                        },
+                                        "version": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--version"
+                                        },
+                                        "expires": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--expires"
+                                        },
+                                        "entitlement": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--entitlement"
+                                        },
+                                        "last_update": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update"
+                                        },
+                                        "last_update_attempt": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_attempt"
+                                        },
+                                        "last_update_result_status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_result_status"
+                                        },
+                                        "last_update_method_status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_method_status"
+                                        }
+                                    }
+                                },
+                                "forticare": {
+                                    "type": "object",
+                                    "title": "FortiCare",
+                                    "description": "FortiCare license status.",
+                                    "required": [
+                                        "type",
+                                        "status",
+                                        "registration_status",
+                                        "registration_supported"
+                                    ],
+                                    "properties": {
+                                        "type": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--type"
+                                        },
+                                        "status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--status"
+                                        },
+                                        "registration_status": {
+                                            "type": "string",
+                                            "title": "Registration Status",
+                                            "description": "Status of registration.",
+                                            "enum": [
+                                                "registered",
+                                                "registrable",
+                                                "unregistrable"
+                                            ]
+                                        },
+                                        "registration_supported": {
+                                            "type": "boolean",
+                                            "title": "Is Registration Supported",
+                                            "description": "True when registration is supported."
+                                        },
+                                        "account": {
+                                            "type": "string",
+                                            "title": "FortiCare Account",
+                                            "description": "FortiCare account name."
+                                        },
+                                        "support": {
+                                            "type": "object",
+                                            "title": "Support Entitlement",
+                                            "description": "Support entitlement type.",
+                                            "properties": {
+                                                "enhanced": {
+                                                    "$ref": "#\/definitions\/license--status--select--definitions--entitlement_status"
+                                                },
+                                                "hardware": {
+                                                    "$ref": "#\/definitions\/license--status--select--definitions--entitlement_status"
+                                                },
+                                                "comprehensive": {
+                                                    "$ref": "#\/definitions\/license--status--select--definitions--entitlement_status"
+                                                }
+                                            }
+                                        },
+                                        "company": {
+                                            "type": "string",
+                                            "title": "Company",
+                                            "description": "Company registered under."
+                                        },
+                                        "industry": {
+                                            "type": "string",
+                                            "title": "Industry",
+                                            "description": "Industry registered under."
+                                        }
+                                    }
+                                },
+                                "ips": {
+                                    "type": "object",
+                                    "title": "IPS",
+                                    "description": "Intrusion Prevention System license status.",
+                                    "properties": {
+                                        "type": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--type"
+                                        },
+                                        "status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--status"
+                                        },
+                                        "version": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--version"
+                                        },
+                                        "expires": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--expires"
+                                        },
+                                        "entitlement": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--entitlement"
+                                        },
+                                        "last_update": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update"
+                                        },
+                                        "last_update_attempt": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_attempt"
+                                        },
+                                        "last_update_result_status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_result_status"
+                                        },
+                                        "last_update_method_status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--last_update_method_status"
+                                        },
+                                        "db_status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--db_status"
+                                        },
+                                        "engine": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--engine"
+                                        }
+                                    }
+                                },
+                                "vm": {
+                                    "type": "object",
+                                    "title": "VM",
+                                    "description": "Virtual machine license status.",
+                                    "properties": {
+                                        "type": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--type"
+                                        },
+                                        "valid": {
+                                            "type": "boolean",
+                                            "title": "License Valid",
+                                            "description": "True when license is valid."
+                                        },
+                                        "status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--status"
+                                        },
+                                        "license_model": {
+                                            "type": "number",
+                                            "title": "License Model",
+                                            "description": "License model."
+                                        },
+                                        "license_platform_name": {
+                                            "type": "string",
+                                            "title": "License Platform Name",
+                                            "description": "Name of license platform."
+                                        },
+                                        "expires": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--expires"
+                                        },
+                                        "closed_network": {
+                                            "type": "boolean",
+                                            "title": "Closed Network",
+                                            "description": "True when network is closed."
+                                        },
+                                        "cpu_used": {
+                                            "type": "number",
+                                            "title": "CPU Used",
+                                            "description": "Number of CPU cores used on this FortiGate."
+                                        },
+                                        "cpu_max": {
+                                            "type": "number",
+                                            "title": "CPU Max",
+                                            "description": "Maximum number of CPU cores specified by license model."
+                                        },
+                                        "mem_used": {
+                                            "type": "number",
+                                            "title": "Memory Used",
+                                            "description": "Memory used in bytes on this FortiGate."
+                                        },
+                                        "mem_max": {
+                                            "type": "number",
+                                            "title": "Memory Max",
+                                            "description": "Maximum about of memory specified by license model."
+                                        },
+                                        "vmx_instance_used": {
+                                            "type": "number",
+                                            "title": "NSX VM Instances Used",
+                                            "description": "The number of VMware NSX VM instances used."
+                                        },
+                                        "vmx_instance_max": {
+                                            "type": "number",
+                                            "title": "NSX VM Instance Max",
+                                            "description": "The maximum number of VMware NSX VM instances allowed."
+                                        }
+                                    }
+                                },
+                                "load_balance_fpc": {
+                                    "type": "object",
+                                    "title": "FPC",
+                                    "description": "FPC license status.",
+                                    "properties": {
+                                        "type": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--type"
+                                        },
+                                        "status": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--status"
+                                        },
+                                        "expires": {
+                                            "$ref": "#\/definitions\/license--status--select--definitions--expires"
+                                        },
+                                        "used": {
+                                            "type": "number",
+                                            "title": "Used",
+                                            "description": "The number of FPC used."
+                                        },
+                                        "max": {
+                                            "type": "number",
+                                            "title": "Max",
+                                            "description": "The maximum number of FPC."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "status",
+                                        "expires",
+                                        "used",
+                                        "max"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "license"
+                ]
+            }
+        },
+        "\/license\/fortianalyzer-status": {
+            "get": {
+                "summary": "Get current license & registration status for the connected FortiAnalyzer.\nAccess Group: secfabgrp",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "license"
+                ]
+            }
+        },
+        "\/license\/database\/upgrade": {
+            "post": {
+                "summary": "Upgrade or downgrade UTM engine or signature package (IPS\/AntiVirus\/Application Control\/Industrial database\/Security Rating\/Internet Service Database) using uploaded file.\nAccess Group: sysgrp.upd",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "db_name": {
+                                    "description": "Security service database name [ips|appctrl|industrial_db|antivirus|security_rating|isdb|iotddb]",
+                                    "type": "string"
+                                },
+                                "confirm_not_signed": {
+                                    "description": "Confirm whether unsigned pkg files may be uploaded.",
+                                    "type": "boolean"
+                                },
+                                "confirm_not_ga_certified": {
+                                    "description": "Confirm whether non GA-certified pkg files may be uploaded.",
+                                    "type": "boolean"
+                                },
+                                "file_id": {
+                                    "description": "File id of existing pkg file from a previous upload.",
+                                    "type": "string"
+                                },
+                                "file_content": {
+                                    "description": "Provided when uploading a file: base64 encoded file data. Must not contain whitespace or other invalid base64 characters. Must be included in HTTP body.",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "license"
+                ]
+            }
+        },
+        "\/license\/forticare-resellers": {
+            "get": {
+                "summary": "Get current FortiCare resellers for the requested country.\nAccess Group: sysgrp.cfg",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "country_code",
+                        "in": "query",
+                        "description": "FortiGuard country code",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "tags": [
+                    "license"
+                ]
+            }
+        },
+        "\/license\/forticare-org-list": {
+            "get": {
+                "summary": "Get FortiCare organization size and industry lists.\nAccess Group: sysgrp.cfg",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "tags": [
+                    "license"
+                ]
+            }
+        }
+    }
+}

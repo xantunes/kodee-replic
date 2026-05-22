@@ -1,0 +1,84 @@
+{
+  "name": "site-to-site-vpn",
+  "description": "Deploy a standard IPsec site-to-site VPN with Phase1, Phase2, policies, and static route",
+  "parameters": {
+    "vpn_name": { "type": "string", "required": true, "description": "Name for the VPN tunnel" },
+    "remote_gateway": { "type": "string", "required": true, "description": "Remote peer IP" },
+    "local_network": { "type": "string", "required": true, "description": "Local CIDR (e.g., 192.168.1.0/24)" },
+    "remote_network": { "type": "string", "required": true, "description": "Remote CIDR (e.g., 192.168.2.0/24)" },
+    "interface": { "type": "string", "required": true, "description": "Outgoing interface (e.g., wan1)" },
+    "psk": { "type": "string", "required": true, "description": "Pre-shared key" }
+  },
+  "steps": [
+    {
+      "tool": "fortios_vpn.ipsec_phase1-interface",
+      "operation": "create",
+      "data": {
+        "name": "{{vpn_name}}-p1",
+        "interface": "{{interface}}",
+        "ip-version": "4",
+        "ike-version": "2",
+        "keylifeseconds": 28800,
+        "peertype": "any",
+        "proposal": ["aes256-sha256"],
+        "remote-gw": "{{remote_gateway}}",
+        "psksecret": "{{psk}}",
+        "type": "static"
+      }
+    },
+    {
+      "tool": "fortios_vpn.ipsec_phase2-interface",
+      "operation": "create",
+      "data": {
+        "name": "{{vpn_name}}-p2",
+        "phase1name": "{{vpn_name}}-p1",
+        "proposal": ["aes256-sha256"],
+        "keylifeseconds": 3600,
+        "src-subnet": "{{local_network}}",
+        "dst-subnet": "{{remote_network}}"
+      }
+    },
+    {
+      "tool": "fortios_firewall_address",
+      "operation": "create",
+      "data": {
+        "name": "{{vpn_name}}-local",
+        "subnet": "{{local_network}}",
+        "type": "ipmask"
+      }
+    },
+    {
+      "tool": "fortios_firewall_address",
+      "operation": "create",
+      "data": {
+        "name": "{{vpn_name}}-remote",
+        "subnet": "{{remote_network}}",
+        "type": "ipmask"
+      }
+    },
+    {
+      "tool": "fortios_firewall_policy",
+      "operation": "create",
+      "data": {
+        "name": "{{vpn_name}}-out",
+        "srcintf": [{"name": "{{interface}}"}],
+        "dstintf": [{"name": "{{vpn_name}}-p1"}],
+        "srcaddr": [{"name": "{{vpn_name}}-local"}],
+        "dstaddr": [{"name": "{{vpn_name}}-remote"}],
+        "action": "accept",
+        "schedule": "always",
+        "service": [{"name": "ALL"}],
+        "logtraffic": "all"
+      }
+    },
+    {
+      "tool": "fortios_router_static",
+      "operation": "create",
+      "data": {
+        "dst": "{{remote_network}}",
+        "gateway": "{{remote_gateway}}",
+        "device": "{{vpn_name}}-p1"
+      }
+    }
+  ]
+}

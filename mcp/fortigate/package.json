@@ -1,0 +1,43 @@
+{
+  "name": "mcp-fortigate",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server for FortiOS Configuration API",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-fortigate": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "test": "node --test --import=tsx tests/unit/**/*.test.ts",
+    "test:e2e": "node --test --import=tsx tests/e2e/*.test.ts",
+    "lint": "tsc --noEmit",
+    "docker:build": "docker build -t mcp-fortigate:latest .",
+    "docker:run": "docker run -it --env-file .env mcp-fortigate:latest",
+    "docker:compose": "docker-compose up -d"
+  },
+  "keywords": [
+    "mcp",
+    "fortigate",
+    "fortios",
+    "firewall",
+    "model-context-protocol"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "axios": "^1.7.9",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.22.3",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

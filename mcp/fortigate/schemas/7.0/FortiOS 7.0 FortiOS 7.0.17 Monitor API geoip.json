@@ -1,0 +1,165 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http:\/\/fortinet.com\/terms\/",
+        "version": "v2",
+        "contact": {
+            "url": "http:\/\/modskristensen.net",
+            "name": "FortiOS Web Application Team",
+            "email": "fosguiqateam@fortinet.com"
+        },
+        "description": "REST API for configuring FortiOS objects and settings",
+        "title": "FortiOS Monitor"
+    },
+    "host": "172.16.177.65",
+    "basePath": "\/api\/v2\/monitor",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application\/json"
+    ],
+    "produces": [
+        "application\/json"
+    ],
+    "securityDefinitions": {
+        "APIKeyQueryParam": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "APIKeyQueryParam": []
+        }
+    ],
+    "paths": {
+        "\/geoip\/geoip-query\/select": {
+            "post": {
+                "summary": "Retrieve location details for IPs queried against FortiGuard's geoip service.\nAccess Group: sysgrp.cfg",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API"
+                    },
+                    "401": {
+                        "description": "Not Authorized: Request without successful login session"
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource. "
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful",
+                        "schema": {
+                            "title": "GeoIP Query",
+                            "description": "Retrieve location details for IP addresses queried against FortiGuard's GeoIP service.",
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object",
+                                "title": "GeoIP Query Result",
+                                "description": "Object mapping requested IP addresses to GeoIP query results.",
+                                "required": [
+                                    "location",
+                                    "fallback"
+                                ],
+                                "properties": {
+                                    "location": {
+                                        "type": "object",
+                                        "title": "Location Results",
+                                        "description": "Location results.",
+                                        "required": [
+                                            "country"
+                                        ],
+                                        "properties": {
+                                            "country": {
+                                                "type": "object",
+                                                "title": "Country Details",
+                                                "description": "An object describing a country by name and ISO code.",
+                                                "required": [
+                                                    "names",
+                                                    "iso_code"
+                                                ],
+                                                "properties": {
+                                                    "iso_code": {
+                                                        "title": "ISO Country Code",
+                                                        "description": "ISO 3166-1 alpha-2 code.",
+                                                        "type": "string"
+                                                    },
+                                                    "names": {
+                                                        "title": "Country Names",
+                                                        "description": "Country names in different languages.",
+                                                        "type": "object",
+                                                        "required": [
+                                                            "en"
+                                                        ],
+                                                        "properties": {
+                                                            "en": {
+                                                                "title": "English Country Name",
+                                                                "description": "Country name, in English.",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "additionalProperties": {
+                                                            "title": "Other Language Country Name",
+                                                            "description": "Each key is a two letter language code. Each value is the translated country name for that language.",
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "fallback": {
+                                        "title": "Fallback Result Indicator",
+                                        "description": "True when the result only contains fallback country data, indicating an issue communicating with the GeoIP service.",
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request "
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. The offended source is temporarily blocked for certain amount of time."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "Possible parameters to go in the body for the request.",
+                        "required": true,
+                        "schema": {
+                            "properties": {
+                                "ip_addresses": {
+                                    "description": "One or more IP address strings to query for location details.",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "geoip"
+                ]
+            }
+        }
+    }
+}

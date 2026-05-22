@@ -1,0 +1,88 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http:\/\/fortinet.com\/terms\/",
+        "version": "v2",
+        "contact": {
+            "url": "http:\/\/modskristensen.net",
+            "name": "FortiOS Web Application Team",
+            "email": "fosguiqateam@fortinet.com"
+        },
+        "description": "REST API for configuring FortiOS objects and settings",
+        "title": "FortiOS log"
+    },
+    "host": "172.16.177.65",
+    "basePath": "\/api\/v2\/log",
+    "schemes": [
+        "https"
+    ],
+    "consumes": [
+        "application\/x-www-form-urlencoded"
+    ],
+    "produces": [
+        "application\/json"
+    ],
+    "securityDefinitions": {
+        "APIKeyQueryParam": {
+            "type": "apiKey",
+            "name": "access_token",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "APIKeyQueryParam": []
+        }
+    ],
+    "paths": {
+        "\/search\/abort\/{session_id}": {
+            "post": {
+                "summary": "Abort a running log search session.",
+                "tags": [
+                    "search"
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad Request: Request cannot be processed by the API."
+                    },
+                    "401": {
+                        "description": "Not Authorized: Authentication not successful."
+                    },
+                    "403": {
+                        "description": "Forbidden: Request is missing CSRF token or administrator is missing access profile permissions."
+                    },
+                    "404": {
+                        "description": "Resource Not Found: Unable to find the specified resource."
+                    },
+                    "405": {
+                        "description": "Method Not Allowed: Specified HTTP method is not allowed for this resource."
+                    },
+                    "424": {
+                        "description": "Failed Dependency: Fail dependency can be duplicate resource, missing required parameter, missing required attribute, invalid attribute value"
+                    },
+                    "200": {
+                        "description": "OK: Request returns successful"
+                    },
+                    "500": {
+                        "description": "Internal Server Error: Internal error when processing the request."
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large: Request cannot be processed due to large entity. "
+                    },
+                    "429": {
+                        "description": "Access temporarily blocked: Maximum failed authentications reached. Source is blocked by IP Address."
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "session_id",
+                        "in": "path",
+                        "description": "Provide the session ID for the request",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ]
+            }
+        }
+    }
+}

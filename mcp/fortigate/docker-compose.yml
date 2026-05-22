@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  mcp-fortigate:
+    build: .
+    image: mcp-fortigate:latest
+    container_name: mcp-fortigate
+    environment:
+      - FORTIOS_HOST=${FORTIOS_HOST}
+      - FORTIOS_API_TOKEN=${FORTIOS_API_TOKEN}
+      - FORTIOS_READONLY=${FORTIOS_READONLY:-true}
+      - FORTIOS_CHANGE_TOKEN=${FORTIOS_CHANGE_TOKEN}
+      - FORTIOS_OPERATOR_TOKEN=${FORTIOS_OPERATOR_TOKEN}
+      - FORTIOS_APPROVER_TOKEN=${FORTIOS_APPROVER_TOKEN}
+      - FORTIOS_EMERGENCY_TOKEN=${FORTIOS_EMERGENCY_TOKEN}
+      - FORTIOS_CHANGE_WINDOW=${FORTIOS_CHANGE_WINDOW}
+      - FORTIOS_VERIFY_SSL=${FORTIOS_VERIFY_SSL:-true}
+      - FORTIOS_VERSION=${FORTIOS_VERSION}
+    volumes:
+      - ./audit:/app/audit
+      - ./config.json:/app/config.json:ro
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
